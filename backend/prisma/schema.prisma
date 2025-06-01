@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String   @id @default(cuid())
+  username         String   @unique
+  email            String   @unique
+  phone            String   @unique
+  profilePicture   String?  // Optional
+  rating           Float    @default(0.0)
+  tasksPosted      Int      @default(0)
+  tasksCompleted   Int      @default(0)
+  tasker           Boolean  @default(false)
+  isVerified       Boolean  @default(false)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  postedTasks      Task[]   @relation("PostedTasks")
+  acceptedTasks    Task[]   @relation("AcceptedTasks")
+}
+
+model Task {
+  id               String      @id @default(cuid())
+  title            String
+  description      String
+  location         String
+  offer            Float
+  category         String?
+  status           TaskStatus  @default(OPEN)
+
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  postedById       String
+  postedBy         User        @relation("PostedTasks", fields: [postedById], references: [id])
+
+  acceptedById     String?     
+  acceptedBy       User?       @relation("AcceptedTasks", fields: [acceptedById], references: [id])
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
