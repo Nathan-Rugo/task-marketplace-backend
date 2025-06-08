@@ -80,7 +80,7 @@ npm run dev
 - [ ] Secure API structure
 
 ## API Documentation
-Coming soon via Postman collection
+[Postman API Specification Document](https://app.getpostman.com/join-team?invite_code=61e9a43b1d804b0cddde3c462ba9fe296031e3d5685d051ce47960703fa9897d&target_code=e470a382183b82f85604a5eea7208d02)
 
 
 ---

@@ -13,6 +13,7 @@ model User {
   username         String   @unique
   email            String   @unique
   phone            String   @unique
+  password         String
   profilePicture   String?  // Optional
   rating           Float    @default(0.0)
   tasksPosted      Int      @default(0)

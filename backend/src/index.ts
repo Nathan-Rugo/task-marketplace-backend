@@ -3,6 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from './generated/prisma';
 
+import authRoutes from './routes/authentication.routes';
+import userRoutes from './routes/user.routes';
+
 dotenv.config();
 
 const app = express();
@@ -25,6 +28,9 @@ app.get('/health', async (req, res) => {
     res.status(500).json({ status: 'error', error });
   }
 });
+
+app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
