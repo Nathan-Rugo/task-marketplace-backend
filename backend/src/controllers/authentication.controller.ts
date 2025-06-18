@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import { loginUser, signupUser } from '../services/authentication.service';
 
 export async function signup(req: Request, res: Response) {
-const { username, email, password, phone } = req.body;
+const { username, email, password, phone, profilePicture } = req.body;
 
     try {
-        const user = await signupUser(username, email, password, phone);
+        const user = await signupUser(username, email, password, phone, profilePicture);
         return res.status(201).json(user);
     } catch (error: any) {
         if (error.message === 'AlreadyExists') {

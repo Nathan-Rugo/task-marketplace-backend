@@ -8,20 +8,28 @@ export async function signupUser(
     username: string,
     email: string,
     password: string,
-    phone: string
-    ): Promise<Omit<User, 'password'>> {
+    phone: string,
+    profilePicture: string
+    ): Promise<{ token: string; user: Omit<User, 'password'> }> {
     // Hash the incoming password
     const hashed = await bcrypt.hash(password, 10);
 
     try {
         // Create the user record
         const user = await prisma.user.create({
-        data: { username, email, password: hashed, phone },
+        data: { username, email, password: hashed, phone, profilePicture },
         });
+
+        // Sign JWT
+        const token = jwt.sign(
+            {userId: user.id, email: user.email},
+            process.env.JWT_SECRET as string,
+            { expiresIn: '7d' }
+        );
 
         // Strip out the password before returning
         const { password: _, ...userSafe } = user;
-        return userSafe;
+        return {token, user: userSafe}
     } catch (err: any) {
         // Handle unique constraint violations
         if (err.code === 'P2002') {
