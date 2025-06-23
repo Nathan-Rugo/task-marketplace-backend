@@ -43,8 +43,8 @@ model Task {
   taskPosterId     String
   taskPoster       User        @relation("PostedTasks", fields: [taskPosterId], references: [id])
 
-  taskerAssignedId String
-  taskerAssigned   User        @relation("AssignedTasks", fields: [taskerAssignedId], references: [id])
+  taskerAssignedId String?
+  taskerAssigned   User?        @relation("AssignedTasks", fields: [taskerAssignedId], references: [id])
 
   taskersApplied   TaskApplications[]
 

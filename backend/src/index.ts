@@ -5,6 +5,7 @@ import { PrismaClient } from './generated/prisma';
 
 import authRoutes from './routes/authentication.routes';
 import userRoutes from './routes/user.routes';
+import taskRoutes from './routes/task.routes';
 
 dotenv.config();
 
@@ -31,8 +32,10 @@ app.get('/health', async (req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
+app.use('/tasks', taskRoutes);
 
 const PORT = process.env.PORT || 4000;
+const HOST = process.env.HOST || 'localhost';
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://${HOST}:${PORT}`);
 });

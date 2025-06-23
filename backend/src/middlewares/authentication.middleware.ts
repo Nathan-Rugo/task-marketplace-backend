@@ -4,7 +4,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 interface jwtPayload{
     userId: string,
     email: string,
-    isat: number,
+    iat: number,
     exp: number
 }
 
@@ -23,13 +23,15 @@ export function authenticateToken(req: Request, res:Response, next:NextFunction)
     const token = authHeader && authHeader.split(' ')[1]; // Bearer `<token>`
 
     if(!token){
-        return res.status(401).json({ message: 'Missing authorization token '});
+        res.status(401).json({ message: 'Missing authorization token '});
+        return;
     }
 
     // Verify the token
     jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
         if (err || typeof decoded !== 'object') {
-        return res.status(401).json({ message: 'Invalid or expired token' });
+        res.status(401).json({ message: 'Invalid or expired token' });
+        return;
     }
 
         // Attach user info to request
