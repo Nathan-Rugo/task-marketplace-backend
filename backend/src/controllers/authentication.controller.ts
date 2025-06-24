@@ -75,7 +75,8 @@ export async function validateToken (req: Request, res: Response): Promise<Respo
 
     const user = await prisma.user.findUnique({ where: { email: decoded.email },
       select: {
-        password: false, // Exclude password from the response
+        password: false,
+        id: true
       }
     })
 

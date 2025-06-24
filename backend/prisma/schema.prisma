@@ -38,7 +38,7 @@ model Task {
   category         String
   location         String
   offer            Float       
-  status           TaskStatus  @default(OPEN)
+  status           TaskStatus  @default(CREATED)
 
   taskPosterId     String
   taskPoster       User        @relation("PostedTasks", fields: [taskPosterId], references: [id])
@@ -89,10 +89,11 @@ model Review {
 
 enum TaskStatus {
   CREATED
+  REVIEW
+  PENDING
   IN_PROGRESS
   COMPLETED
-  CANCELLED
-  OPEN
+  CANCELLED 
 }
 
 enum TaskApplicationStatus {

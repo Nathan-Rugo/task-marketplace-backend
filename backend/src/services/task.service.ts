@@ -1,4 +1,4 @@
-import { PrismaClient, Task } from '../generated/prisma';
+import { PrismaClient, Task, TaskStatus } from '../generated/prisma';
 
 export interface CreateTaskDTO{
     title: string;
@@ -57,14 +57,14 @@ export async function findTasksById(taskId: string):Promise<Task>{
         where: {id: taskId},
     });
 
-    if (!task){
-        throw new Error('NotFound');
+    if (!task) {
+        throw new Error('Task not found');
     }
-
+    
     return task;
 }
 
-export const acceptTask = async (posterId: string, applicationId: string) => {
+export async function acceptTask(posterId: string, applicationId: string):Promise<Task>{
     const application = await prisma.taskApplications.findUnique({
         where: { id: applicationId },
         include: { task: true },
@@ -78,23 +78,23 @@ export const acceptTask = async (posterId: string, applicationId: string) => {
     }
 
     // Update the application status and assign the task
-    const updatedApplication = await prisma.taskApplications.update({
+    await prisma.taskApplications.update({
         where: { id: applicationId },
         data: { status: "ACCEPTED" },
     });
 
-    await prisma.task.update({
+    const updatedTask = await prisma.task.update({
         where: { id: application.taskId },
         data: {
-        taskerAssignedId: application.userId,
-        status: "IN_PROGRESS",
+            taskerAssignedId: application.userId,
+            status: "IN_PROGRESS",
         },
     });
 
-    return updatedApplication;
+    return updatedTask;
 };
 
-export const applyForTask = async(userId: string, taskId: string) => {
+export async function applyForTask(userId: string, taskId: string):Promise<any>{
     // Checks if task exists
     const task = await prisma.task.findUnique({
         where: {id: taskId}

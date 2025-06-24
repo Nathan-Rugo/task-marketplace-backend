@@ -1,41 +1,39 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '../generated/prisma';
+import { findUser, getTasksByUserId } from '../services/user.services';
 
 const prisma = new PrismaClient();
 
 // Returns the profile of the authenticated user.
-export async function getCurrentUser(req: Request, res: Response) {
+export async function getCurrentUserController(req: Request, res: Response) {
+    try {
+        const userId = req.user?.id;
+        
+        const user = await findUser(userId);
+
+        res.status(200).json(user);
+    } catch (error: any) {
+        console.error('getCurrentUser error:', error);
+        if (error.message == 'NotFound'){
+            res.status(404).json({message: 'User not found'})
+        }
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export const getTasksByUserIdController = async (req: Request, res: Response) => {
     try {
         const userId = req.user?.id;
         if (!userId) {
-        res.status(401).json({ message: 'Not authenticated' });
+            res.status(400).json({ message: 'Missing user Id' });
         }
 
-        const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-            password: false,
-            id: true,
-            username: true,
-            email: true,
-            phone: true,
-            profilePicture: true,
-            rating: true,
-            tasksPosted: true,
-            tasksCompleted: true,
-            isTasker: true,
-            createdAt: true,
-            updatedAt: true,
-        },
-        });
+        const tasks = await getTasksByUserId(userId);
+        res.status(200).json({ message: 'Tasks fetched successfully', tasks});
 
-        if (!user) {
-        res.status(404).json({ message: 'User not found' });
-        }
-
-        res.json(user);
     } catch (error) {
-        console.error('getCurrentUser error:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+        console.error('completeTaskController error:', error);
+        res.status(500).json({ message: 'Something went wrong'});
+        
+    }  
 }
