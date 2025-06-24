@@ -4,7 +4,6 @@ import { authenticateToken } from '../middlewares/authentication.middleware';
 
 const router = Router();
 
-// GET /users/me → protected route
 router.get('/me', authenticateToken, getCurrentUserController);
 router.get('/tasks', authenticateToken, getTasksByUserIdController);
 

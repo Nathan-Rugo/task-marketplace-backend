@@ -1,5 +1,5 @@
 import { PrismaClient, Task, TaskStatus } from '../generated/prisma';
-import { userReturned } from '../lib/userReturned';
+import { userReturned } from '../lib/selectTypes';
 
 export interface CreateTaskDTO{
     title: string;

@@ -1,5 +1,5 @@
-import { PrismaClient, Task, TaskStatus } from '../generated/prisma';
-import { userReturned } from '../lib/userReturned';
+import { PrismaClient, Task, TaskStatus, TaskApplicationStatus} from '../generated/prisma';
+import { userReturned, appliedTask, taskStatusAppliedFilter } from '../lib/selectTypes';
 
 const prisma = new PrismaClient();
 
@@ -17,6 +17,12 @@ type User = {
     updatedAt: Date;
 };
 
+type AppliedInfo = {
+    id: String
+    appliedAt: Date;
+    status: TaskApplicationStatus;
+    task:     Task;
+}
 
 
 export async function findUser(userId: string): Promise<User> {
@@ -32,21 +38,22 @@ export async function findUser(userId: string): Promise<User> {
 
 
 export async function getTasksByUserId(userId: string): Promise<{
-    asTasker: Task[];
-    asPoster: Task[];
+    assigned: Task[];
+    posted: Task[];
+    applied: AppliedInfo[];
     }> {
-    const asTasker = await prisma.task.findMany({
+    const assigned = await prisma.task.findMany({
         where: {
         taskerAssignedId: userId,
-        status: { in: [TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED] },
+        status: { in: [TaskStatus.IN_PROGRESS, TaskStatus.REVIEW] },
         },
         orderBy: { updatedAt: 'desc' },
     });
 
-    const asPoster = await prisma.task.findMany({
+    const posted = await prisma.task.findMany({
         where: {
         taskPosterId: userId,
-        status: { in: [TaskStatus.CREATED, TaskStatus.IN_PROGRESS, TaskStatus.COMPLETED] },
+        status: { in: [TaskStatus.CREATED, TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.REVIEW, TaskStatus.COMPLETED] },
         },
         orderBy: { updatedAt: 'desc' },
         include: {
@@ -55,5 +62,18 @@ export async function getTasksByUserId(userId: string): Promise<{
         }
     });
 
-    return { asTasker, asPoster };
+    const applied = await prisma.taskApplications.findMany({
+        where: {
+            userId: userId,
+            task: taskStatusAppliedFilter,
+        },
+        select: {
+            id: true,
+            appliedAt: true,
+            status: true,
+            task: {select: appliedTask},
+        },
+    });
+
+    return { assigned: assigned, posted: posted, applied: applied};
 }
