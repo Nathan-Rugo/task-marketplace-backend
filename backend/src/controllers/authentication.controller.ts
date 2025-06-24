@@ -16,7 +16,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
 
   try {
     const result = await signupUser(username, email, password, phone, profilePicture);
-    return res.status(201).json(result);
+    return res.status(201).json({result});
   } catch (error: any) {
     switch (error.message) {
       case 'EmailExists':
@@ -38,7 +38,8 @@ export async function login(req: Request, res: Response): Promise<Response> {
     try {
         const { email, password } = req.body;
         const { token, user } = await loginUser(email, password);
-        return res.status(200).json({ token, user });
+        console.log(token);
+        return res.status(200).json({ message: 'Login Successful', token, user });
     } catch (error: any) {
         if (error.message === 'InvalidCredentials') {
           return res.status(401).json({ message: 'Invalid email or password.' });
@@ -85,7 +86,7 @@ export async function validateToken (req: Request, res: Response): Promise<Respo
       return res.status(401).json({ error: 'User not found.' });
     }
 
-    return res.status(200).json({ user });
+    return res.status(200).json({ message: 'Token Validated', user });
 
   } catch (error: any) {
     console.error('Token validation failed:', error.message);
@@ -126,7 +127,7 @@ export async function googleSignup(req: Request, res: Response): Promise<Respons
     });
     const { password, ...userSafe } = newUser;
 
-    return res.status(201).json({ token, user: userSafe });
+    return res.status(201).json({ message: 'Google signup successful', token, user: userSafe });
   } catch (error) {
     console.error('Google Sign Up error:', error);
     return res.status(500).json({ message: 'Internal server error' });
@@ -166,10 +167,38 @@ export async function googleLogin(req: Request, res: Response): Promise<Response
     // 5. Exclude password
     const { password, ...userSafe } = user;
 
-    return res.status(200).json({ token, user: userSafe });
+    return res.status(200).json({ message: 'Google login successfull', token, user: userSafe });
 
   } catch (error) {
     console.error('Google Login Error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
+}
+
+export async function logout(req: Request, res: Response){
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Authorization token missing or malformed.' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    if(!token) res.status(400).json({message: 'No token provided'});
+
+    const decoded: any = jwt.decode(token);
+    
+    if (!decoded || !decoded.exp) {
+      return res.status(400).json({ message: 'Invalid token' });
+    }
+
+    const expiresAt = new Date(decoded.exp * 1000);
+    await prisma.revokedToken.create({ data: { token, expiresAt } });
+
+    return res.status(200).json({ message: 'Logged out; token revoked' })
+  } catch (error: any) {
+    console.log('logout error', error);
+    return res.status(500).json({message: 'Internal Server Error'});
+  }
+    
 }

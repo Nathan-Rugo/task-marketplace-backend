@@ -1,4 +1,5 @@
 import { PrismaClient, Task, TaskStatus } from '../generated/prisma';
+import { userReturned } from '../lib/userReturned';
 
 export interface CreateTaskDTO{
     title: string;
@@ -49,12 +50,20 @@ export async function findTasks(
     return prisma.task.findMany({
         where,
         orderBy: {createdAt: 'desc'},
+        include: {
+            taskerAssigned: {select: userReturned},
+            taskPoster: {select: userReturned},
+        }
     });
 }
 
 export async function findTasksById(taskId: string):Promise<Task>{
     const task = await prisma.task.findUnique({
         where: {id: taskId},
+        include: {
+            taskerAssigned: {select: userReturned},
+            taskPoster: {select: userReturned},
+        }
     });
 
     if (!task) {
@@ -106,6 +115,7 @@ export async function applyForTask(userId: string, taskId: string):Promise<any>{
     if (task.taskPosterId === userId){
         throw new Error('You cannot apply for your own task');
     }
+
 
     const existingApplication = await prisma.taskApplications.findFirst({
         where: {

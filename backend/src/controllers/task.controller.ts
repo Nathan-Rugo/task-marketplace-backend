@@ -30,8 +30,8 @@ export async function getTasks(req: Request, res: Response){
         const category = req.query.category as string | undefined;
 
         const tasks = await findTasks({status, category});
-
-        res.status(200).json(tasks);
+        
+        res.status(200).json({message: 'Tasks successfully fetched', tasks});
     } catch (error) {
         console.error('getTasks error', error);
         res.status(500).json({ message: "Unable to fetch tasks" });
@@ -43,7 +43,7 @@ export async function getTasksById(req: Request, res: Response){
     try {
         const {id} = req.params;
         const task = await findTasksById(id);
-        res.status(200).json(task);
+        res.status(200).json({message: 'Task successfully fetched', task});
     } catch (error: any) {
         if (error.message === 'NotFound'){
             res.status(404).json({message: 'Task not found'});
@@ -94,7 +94,6 @@ export const applyForTaskController = async (req: Request, res: Response) => {
         if (!taskId || !userId){
             res.status(400).json({ message: "Missing task id or user id"});
         }
-
         const application = await applyForTask(userId, taskId);
         res.status(201).json({message: 'Task application submitted', data: application});
     } catch (error: any) {

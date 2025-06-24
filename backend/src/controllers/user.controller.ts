@@ -11,7 +11,7 @@ export async function getCurrentUserController(req: Request, res: Response) {
         
         const user = await findUser(userId);
 
-        res.status(200).json(user);
+        res.status(200).json({message: 'User info fetched successfully', user});
     } catch (error: any) {
         console.error('getCurrentUser error:', error);
         if (error.message == 'NotFound'){
