@@ -38,7 +38,6 @@ export async function login(req: Request, res: Response): Promise<Response> {
     try {
         const { email, password } = req.body;
         const { token, user } = await loginUser(email, password);
-        console.log(token);
         return res.status(200).json({ message: 'Login Successful', token, user });
     } catch (error: any) {
         if (error.message === 'InvalidCredentials') {

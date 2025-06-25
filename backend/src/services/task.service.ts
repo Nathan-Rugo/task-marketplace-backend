@@ -29,6 +29,9 @@ export async function createTask(
                 connect: { id: userId },
             },
             },
+        include: {
+            taskPoster: {select: userReturned},
+        }
         });
 }
 
