@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { acceptTask, createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, completeTask } from '../services/task.service';
+import { acceptTask, createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, completeTask, confirmPayment } from '../services/task.service';
 
 export async function postTask(req: Request, res: Response){
     try{
@@ -125,4 +125,23 @@ export const completeTaskController = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 }
+
+
+export const confirmPaymentController = async (req: Request, res: Response) => {
+    try {
+        const taskId = req.params.id;
+        const { phoneNumber } = req.body;       
+
+        const task = await confirmPayment(taskId, phoneNumber);
+        res.status(200).json({ message: 'Payment confirmed', data: task });
+
+    } catch (error: any) {
+        console.error('confirmPaymentController error:', error);
+
+        if (error.message === 'TaskNotFound') {
+        res.status(404).json({ message: 'Task not found' });
+        }
+        res.status(500).json({ message: 'Unable to confirm payment' });
+    }
+};
 

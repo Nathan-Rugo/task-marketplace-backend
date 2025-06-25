@@ -42,3 +42,7 @@ export const appliedTask = {
     updatedAt: false
 }
 
+export const taskersApplied = {
+    user: {select: userReturned}
+}
+

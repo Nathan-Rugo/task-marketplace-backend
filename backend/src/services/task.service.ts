@@ -1,5 +1,5 @@
 import { PrismaClient, Task, TaskStatus } from '../generated/prisma';
-import { userReturned } from '../lib/selectTypes';
+import { appliedTask, taskersApplied, userReturned } from '../lib/selectTypes';
 
 export interface CreateTaskDTO{
     title: string;
@@ -147,10 +147,26 @@ export const completeTask = async(taskId: string, userId: string) => {
     return prisma.task.update({
         where: {id: taskId},
         data: {
-            status: 'COMPLETED',
+            status: TaskStatus.COMPLETED,
             updatedAt: new Date(),
         }
     })
-    
+}
+
+export const confirmPayment = async(taskId: string, phoneNumber: string):Promise<Task> => {
+    return prisma.task.update({
+        where: {
+            id: taskId
+        },
+        data: {
+            status: TaskStatus.PENDING,
+            updatedAt: new Date(),
+        },
+        include: {
+            taskerAssigned: {select: userReturned},
+            taskPoster: {select: userReturned},
+            taskersApplied: {select: taskersApplied}
+        }
+    })
 }
 
