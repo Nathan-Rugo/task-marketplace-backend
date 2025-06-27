@@ -6,6 +6,7 @@ import { PrismaClient } from './generated/prisma';
 import authRoutes from './routes/authentication.routes';
 import userRoutes from './routes/user.routes';
 import taskRoutes from './routes/task.routes';
+import applicationRoutes from './routes/application.routes';
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.get('/health', async (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/tasks', taskRoutes);
+app.use('/applications', applicationRoutes);
 
 const PORT = process.env.PORT || 4000;
 const HOST = process.env.HOST || 'localhost';
