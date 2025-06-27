@@ -1,6 +1,6 @@
 import { PrismaClient, User } from '../generated/prisma';
 import bcrypt from 'bcrypt';
-import { generateToken } from '../lib/utils';
+import { generateToken } from '../lib/utils/generateToken';
 
 const prisma = new PrismaClient();
 

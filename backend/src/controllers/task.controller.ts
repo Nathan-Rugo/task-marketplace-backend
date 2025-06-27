@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, completeTask, confirmPayment, getTaskApplicationsByTaskId } from '../services/task.service';
+import { createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, completeTask, getTaskApplicationsByTaskId } from '../services/task.service';
+import { initiateSTKPush } from '../lib/utils/initiateSTKPush';
 
 export async function postTask(req: Request, res: Response){
     try{
@@ -95,22 +96,37 @@ export const completeTaskController = async (req: Request, res: Response) => {
     }
 }
 
-
 export const confirmPaymentController = async (req: Request, res: Response) => {
     try {
         const taskId = req.params.id;
-        const { phoneNumber } = req.body;       
+        const { phoneNumber } = req.body;
 
-        const task = await confirmPayment(taskId, phoneNumber);
-        res.status(200).json({ message: 'Payment confirmed', data: task });
+        if (!phoneNumber) {
+        res.status(400).json({ message: 'Phone number is required' });
+        }
+
+        // Temporary service fee
+        const serviceFee = 1;
+
+        const stkResponse = await initiateSTKPush(phoneNumber, serviceFee, taskId);
+
+        if (stkResponse.ResponseCode !== '0') {
+            res.status(400).json({
+                message: 'STK Push failed to initiate',
+                details: stkResponse.ResponseDescription,
+            });
+        }
+        
+
+        res.status(202).json({
+        message: 'STK Push initiated successfully',
+        stk: stkResponse,
+        });
+
 
     } catch (error: any) {
         console.error('confirmPaymentController error:', error);
-
-        if (error.message === 'TaskNotFound') {
-        res.status(404).json({ message: 'Task not found' });
-        }
-        res.status(500).json({ message: 'Unable to confirm payment' });
+        res.status(500).json({ message: 'Unable to process payment' });
     }
 };
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getTasks, getTasksById, postTask, applyForTaskController, completeTaskController, confirmPaymentController, getTaskApplicationsByTaskIdController} from '../controllers/task.controller';
+import { getTasks, getTasksById, postTask, applyForTaskController, completeTaskController, getTaskApplicationsByTaskIdController, confirmPaymentController} from '../controllers/task.controller';
 import { authenticateToken } from "../middlewares/authentication.middleware";
 
 const router = Router();

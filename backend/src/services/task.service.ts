@@ -110,6 +110,10 @@ export async function applyForTask(userId: string, taskId: string):Promise<any>{
         data: {
             taskId,
             userId,
+        },
+        include: {
+            user: {select: userReturned},
+            task: {select: appliedTask}
         }
     });
 
@@ -133,22 +137,6 @@ export const completeTask = async(taskId: string, userId: string) => {
     })
 }
 
-export const confirmPayment = async(taskId: string, phoneNumber: string):Promise<Task> => {
-    return prisma.task.update({
-        where: {
-            id: taskId
-        },
-        data: {
-            status: TaskStatus.PENDING,
-            updatedAt: new Date(),
-        },
-        include: {
-            taskerAssigned: {select: userReturned},
-            taskPoster: {select: userReturned},
-            taskersApplied: {select: taskersApplied}
-        }
-    })
-}
 
 export const getTaskApplicationsByTaskId = async(taskId: string): Promise<TaskApplications[]> => {
     const tasksApplications = await prisma.taskApplications.findMany({

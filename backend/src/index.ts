@@ -7,6 +7,7 @@ import authRoutes from './routes/authentication.routes';
 import userRoutes from './routes/user.routes';
 import taskRoutes from './routes/task.routes';
 import applicationRoutes from './routes/application.routes';
+import paymentRoutes from './routes/payment.routes';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/tasks', taskRoutes);
 app.use('/applications', applicationRoutes);
+app.use('/payment', paymentRoutes);
 
 const PORT = process.env.PORT || 4000;
 const HOST = process.env.HOST || 'localhost';

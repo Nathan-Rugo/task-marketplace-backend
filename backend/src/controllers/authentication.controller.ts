@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { loginUser, signupUser } from '../services/authentication.service';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { PrismaClient } from '../generated/prisma';
-import { generateToken } from '../lib/utils';
+import { generateToken } from '../lib/utils/generateToken';
 
 const jwtSecret = process.env.JWT_SECRET;
 const prisma = new PrismaClient();
