@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, completeTask, getTaskApplicationsByTaskId } from '../services/task.service';
+import { createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, completeTask } from '../services/task.service';
 import { initiateSTKPush } from '../lib/utils/initiateSTKPush';
 
 export async function postTask(req: Request, res: Response){
@@ -100,15 +100,23 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
     try {
         const taskId = req.params.id;
         const { phoneNumber } = req.body;
+        let formattedPhoneNumber;
 
         if (!phoneNumber) {
         res.status(400).json({ message: 'Phone number is required' });
         }
 
-        // Temporary service fee
+        if (phoneNumber.startsWith('0')) {
+            formattedPhoneNumber = '254' + phoneNumber.slice(1);
+        }
+
+        if (phoneNumber.startsWith('254')) {
+            formattedPhoneNumber = phoneNumber;
+        }
+
         const serviceFee = 1;
 
-        const stkResponse = await initiateSTKPush(phoneNumber, serviceFee, taskId);
+        const stkResponse = await initiateSTKPush(formattedPhoneNumber, serviceFee, taskId);
 
         if (stkResponse.ResponseCode !== '0') {
             res.status(400).json({
@@ -116,12 +124,12 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
                 details: stkResponse.ResponseDescription,
             });
         }
-        
 
         res.status(202).json({
-        message: 'STK Push initiated successfully',
-        stk: stkResponse,
+            message: 'STK Push initiated; subscribe for result',
+            checkoutId: stkResponse.CheckoutRequestID
         });
+
 
 
     } catch (error: any) {
@@ -129,19 +137,3 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Unable to process payment' });
     }
 };
-
-export const getTaskApplicationsByTaskIdController = async (req: Request, res: Response) => {
-    try {
-        const taskId = req.params.taskId;
-        const taskApplications = await getTaskApplicationsByTaskId(taskId);
-        res.status(200).json({ message: 'Task Applications Found', taskApplications})
-    } catch (error: any) {
-        console.error('getTaskApplicationsByTaskId error: ', error);
-        if (error.message === 'NotFound'){
-            res.status(404).json({ message: 'Task applications not found '});
-        }
-        res.status(500).json({ message: 'Internal Server Error '});
-    }
-    
-}
-

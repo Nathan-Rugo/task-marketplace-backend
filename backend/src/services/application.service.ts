@@ -1,4 +1,4 @@
-import { PrismaClient, Task } from "../generated/prisma";
+import { PrismaClient, Task, TaskApplicationStatus, TaskApplications } from "../generated/prisma";
 import { userReturned } from "../lib/selectTypes";
 
 const prisma = new PrismaClient();
@@ -47,3 +47,29 @@ export async function acceptTask(posterId: string, applicationId: string):Promis
 
     return updatedTask;
 };
+
+export const getTaskApplicationsByTaskId = async(taskId: string): Promise<TaskApplications[]> => {
+    const task = await prisma.task.findUnique({
+        where: {id: taskId},
+        select: {
+            id: true
+        }
+    });
+
+    if (!task?.id) throw new Error('InvalidTaskId');
+
+    const tasksApplications = await prisma.taskApplications.findMany({
+        where: {
+            taskId: taskId,
+            status: TaskApplicationStatus.PENDING
+        },
+        include:{
+            task: true,
+            user: {select: userReturned}
+        }
+    })
+
+    if (!tasksApplications) throw new Error('NotFound');
+
+    return tasksApplications;
+}

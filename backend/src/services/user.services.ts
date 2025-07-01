@@ -1,5 +1,6 @@
 import { PrismaClient, Task, TaskStatus, TaskApplicationStatus} from '../generated/prisma';
 import { userReturned, appliedTask, taskStatusAppliedFilter } from '../lib/selectTypes';
+import { isTasker } from '../middlewares/isTasker.middleware';
 
 const prisma = new PrismaClient();
 
@@ -76,4 +77,48 @@ export async function getTasksByUserId(userId: string): Promise<{
     });
 
     return { assigned: assigned, posted: posted, applied: applied};
+}
+
+export async function toggleAvailability(userId: string): Promise<User>{
+    const toggle = await prisma.user.findUnique({
+        where: {id: userId},
+        select: {
+            isTasker: true
+        }
+    });
+
+
+    const user = await prisma.user.update({
+        where: {id: userId},
+        data: {
+            isTasker: !toggle?.isTasker
+        },
+        select: userReturned
+    });
+
+    return user;
+}
+
+export async function editProfile(userId: string, body: User): Promise<User>{
+    const name = body.username;
+    const email = body.email;
+    const phone = body.phone;
+    const regexEmail = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?strathmore\.edu$/
+    const regexPhone = /^(?:\+254|0)7\d{8}$/
+
+    if (!name || name.length == 0) throw new Error('InvalidName');
+    if (!email || !regexEmail.test(email)) throw new Error('InvalidEmail');
+    if (!phone || !regexPhone.test(phone)) throw new Error('InvalidPhone');
+
+    const user = await prisma.user.update({
+        where: {id: userId},
+        data: {
+            username: name,
+            email: email,
+            phone: phone,
+        },
+        select: userReturned
+    });
+
+    return user;
 }

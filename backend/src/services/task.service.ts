@@ -137,21 +137,3 @@ export const completeTask = async(taskId: string, userId: string) => {
     })
 }
 
-
-export const getTaskApplicationsByTaskId = async(taskId: string): Promise<TaskApplications[]> => {
-    const tasksApplications = await prisma.taskApplications.findMany({
-        where: {
-            taskId: taskId,
-            status: TaskApplicationStatus.PENDING
-        },
-        include:{
-            task: true,
-            user: {select: userReturned}
-        }
-    })
-
-    if (!tasksApplications) throw new Error('NotFound');
-
-    return tasksApplications;
-}
-
