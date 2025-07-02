@@ -28,7 +28,7 @@ export const initiateSTKPush = async (
         PartyA: phone,
         PartyB: shortCode,
         PhoneNumber: phone,
-        CallBackURL: process.env.MPESA_CALLBACK_URL,
+        CallBackURL: 'https://task-marketplace-backend.onrender.com/payments/mpesa/callback',
         AccountReference: `Task-${taskId}`,
         TransactionDesc: 'Payment for task on Task Marketplace',
     }
