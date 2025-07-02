@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { mpesaCallBackController } from '../controllers/payment.controller';
+import { mpesaCallbackController } from '../controllers/payment.controller';
 
 const router = Router();
 
-router.post('/mpesa/callback', mpesaCallBackController);
+router.post('/confirm/callback', mpesaCallbackController);
 
 export default router;

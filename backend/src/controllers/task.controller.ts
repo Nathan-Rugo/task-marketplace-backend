@@ -104,6 +104,7 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
 
         if (!phoneNumber) {
         res.status(400).json({ message: 'Phone number is required' });
+        return;
         }
 
         if (phoneNumber.startsWith('0')) {
@@ -114,22 +115,13 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
             formattedPhoneNumber = phoneNumber;
         }
 
-        const serviceFee = 1;
+        const serviceFee = 2;
 
         const stkResponse = await initiateSTKPush(formattedPhoneNumber, serviceFee, taskId);
-
-        if (stkResponse.ResponseCode !== '0') {
-            res.status(400).json({
-                message: 'STK Push failed to initiate',
-                details: stkResponse.ResponseDescription,
-            });
-        }
-
         res.status(202).json({
-            message: 'STK Push initiated; subscribe for result',
-            checkoutId: stkResponse.CheckoutRequestID
+            message: 'STK Push initiated; enter your PIN on your phone.',
+            checkoutId: stkResponse.id,
         });
-
 
 
     } catch (error: any) {

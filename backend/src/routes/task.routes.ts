@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getTasks, getTasksById, postTask, applyForTaskController, completeTaskController, confirmPaymentController} from '../controllers/task.controller';
+import { getTasks, getTasksById, postTask, applyForTaskController, completeTaskController, confirmPaymentController } from '../controllers/task.controller';
 import { authenticateToken } from "../middlewares/authentication.middleware";
 import { isTasker } from "../middlewares/isTasker.middleware";
 

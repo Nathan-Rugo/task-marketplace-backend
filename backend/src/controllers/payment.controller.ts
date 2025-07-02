@@ -16,68 +16,25 @@ const stkFailureMessages: Record<number, string> = {
     9999: 'Failed to send STK Push request, please contact support',
 };
 
-export async function mpesaCallBackController(req: Request, res: Response) {
-    console.log('🔥 MPESA CALLBACK BODY:', JSON.stringify(req.body, null, 2));
-    res.status(200).json({ ResultCode: 0, ResultDesc: 'Accepted' });
-    try {
-        const callback = req.body?.Body?.stkCallback;
-        if (!callback) {
-        console.error('mpesaCallBackController: missing Body.stkCallback');
-        return;
+
+export async function mpesaCallbackController(req: Request, res: Response) {
+    console.log('🔥 IntaSend WEBHOOK:', req.body);
+    res.sendStatus(200);
+
+    const { data } = req.body;
+    const { id: checkoutId, status, api_ref } = data || {};
+    const taskId = api_ref?.replace(/^TASK-/, '');
+    if (!taskId || !checkoutId) return;
+
+    const task = await prisma.task.findUnique({ where: { id: taskId } });
+
+    // Update if completed
+    if (status === 'COMPLETED') {
+        await prisma.task.update({
+        where: { id: taskId },
+        data: { status: 'PENDING', updatedAt: new Date() },
+        });
     }
 
-    const {
-        CheckoutRequestID,
-        ResultCode,
-        ResultDesc,
-        CallbackMetadata,
-    } = callback;
-
-    const accountRefItem = CallbackMetadata?.Item.find(
-        (i: any) => i.Name === 'AccountReference'
-    );
-    const accountRef = accountRefItem?.Value as string | undefined;
-    const taskId = accountRef?.replace(/^Task-/, '');
-    if (!taskId) {
-        console.error('mpesaCallBackController: no Task ID found');
-        return;
-    }
-
-    if (ResultCode !== 0) {
-        const friendly = stkFailureMessages[ResultCode] || ResultDesc;
-        console.warn(`STK Push failed (code ${ResultCode}): ${friendly}`);
-
-        const originalTask = await prisma.task.findUnique({
-            where: { id: taskId },
-            include: {
-            taskerAssigned: { select: userReturned },
-            taskPoster:     { select: userReturned },
-            taskersApplied: { select: taskersApplied },
-        }
-
-    });
-
-
-    io.to(CheckoutRequestID).emit('paymentResult', {
-        checkoutId: CheckoutRequestID,
-        status:     'CREATED',
-        task:       originalTask,
-        error:      friendly,
-    });
-
-    return;
-    }
-
-    const updatedTask = await mpesaCallBack(taskId);
-
-    console.log(`Task ${taskId} marked as PENDING after payment`);
-
-    io.to(CheckoutRequestID).emit('paymentResult', {
-        checkoutId: CheckoutRequestID,
-        status:     'PENDING',
-        task:       updatedTask,
-    });
-} catch (err) {
-    console.error('mpesaCallBackController error:', err);
-}
+    io.to(checkoutId).emit('paymentResult', { checkoutId, status, task });
 }
