@@ -17,6 +17,13 @@ export async function createTask(
     userId: string,
     dto: CreateTaskDTO
 ): Promise<Task> {
+    await prisma.user.update({
+        where: {id: userId},
+        data: {
+            tasksPosted: {increment: 1}
+        }
+    })
+    
     return prisma.task.create({
         data: {
             title:       dto.title,
@@ -28,6 +35,7 @@ export async function createTask(
             taskPoster: {
                 connect: { id: userId },
             },
+            updatedAt: new Date()
             },
         include: {
             taskPoster: {select: userReturned},
@@ -127,6 +135,13 @@ export const completeTask = async(taskId: string, userId: string) => {
     if (task.taskerAssignedId !== userId && task.taskPosterId !== userId){
         throw new Error('NotAuthorized')
     }
+
+    await prisma.user.update({
+        where: {id: userId},
+        data: {
+            tasksCompleted: {increment: 1}
+        }
+    })
 
     return prisma.task.update({
         where: {id: taskId},
