@@ -64,6 +64,8 @@ export async function mpesaCallBackController(req: Request, res: Response) {
         task:       originalTask,
         error:      friendly,
     });
+
+    return;
     }
 
     const updatedTask = await mpesaCallBack(taskId);

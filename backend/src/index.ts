@@ -19,6 +19,20 @@ export const io = new IOServer(server, {
     cors: { origin: '*' }
 });
 
+// Handle socket connections
+io.on('connection', (socket) => {
+  console.log('Client connected', socket.id);
+
+  // Client asks to join a room for this CheckoutRequestID
+  socket.on('joinPaymentRoom', (checkoutId: string) => {
+    socket.join(checkoutId);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected', socket.id);
+  });
+});
+
 const prisma = new PrismaClient();
 
 app.use(cors());
@@ -49,18 +63,4 @@ const PORT = process.env.PORT || 4000;
 const HOST = process.env.HOST || 'localhost';
 app.listen(PORT, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
-});
-
-// Handle socket connections
-io.on('connection', (socket) => {
-  console.log('Client connected', socket.id);
-
-  // Client asks to join a room for this CheckoutRequestID
-  socket.on('joinPaymentRoom', (checkoutId: string) => {
-    socket.join(checkoutId);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected', socket.id);
-  });
 });
