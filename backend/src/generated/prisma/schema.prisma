@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String       @id @default(cuid())
+  username       String       @unique
+  email          String       @unique
+  phone          String?      @unique // Now optional to support Google signup
+  password       String? // Now optional to support Google signup
+  profilePicture String?
+  rating         Float        @default(0.0)
+  tasksPosted    Int          @default(0)
+  tasksCompleted Int          @default(0)
+  isTasker       Boolean      @default(true)
+  authProvider   AuthProvider @default(CREDENTIALS) // New field
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relations
+  postedTasks      Task[]             @relation("PostedTasks")
+  assignedTasks    Task[]             @relation("AssignedTasks")
+  taskApplications TaskApplications[]
+  reviewsGiven     Review[]           @relation("ReviewsGiven")
+  reviewsReceived  Review[]           @relation("ReviewsReceived")
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  category    String
+  location    String
+  offer       Float
+  status      TaskStatus @default(CREATED)
+
+  taskPosterId String
+  taskPoster   User   @relation("PostedTasks", fields: [taskPosterId], references: [id])
+
+  taskerAssignedId String?
+  taskerAssigned   User?   @relation("AssignedTasks", fields: [taskerAssignedId], references: [id])
+
+  taskersApplied TaskApplications[]
+
+  reviews Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model TaskApplications {
+  id        String                @id @default(cuid())
+  appliedAt DateTime              @default(now())
+  status    TaskApplicationStatus @default(PENDING)
+
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id String @id @default(cuid())
+
+  reviewerId String
+  reviewer   User   @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+
+  revieweeId String
+  reviewee   User   @relation("ReviewsReceived", fields: [revieweeId], references: [id])
+
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id])
+
+  rating    Float    @default(0.0)
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model RevokedToken {
+  token     String   @id @db.VarChar(255)
+  expiresAt DateTime
+}
+
+enum TaskStatus {
+  CREATED
+  REVIEW
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskApplicationStatus {
+  ACCEPTED
+  PENDING
+  DENIED
+}
+
+enum AuthProvider {
+  CREDENTIALS
+  GOOGLE
+}

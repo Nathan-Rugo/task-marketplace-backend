@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import http from 'http';
 import { Server as IOServer } from 'socket.io';
-import { PrismaClient } from './generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 import authRoutes from './routes/authentication.routes';
 import userRoutes from './routes/user.routes';
