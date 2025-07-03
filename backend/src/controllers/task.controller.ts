@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, completeTask } from '../services/task.service';
+import { createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, confirmPayment, completeTask } from '../services/task.service';
 import { initiateSTKPush } from '../lib/utils/initiateSTKPush';
 
 export async function postTask(req: Request, res: Response){
@@ -117,15 +117,22 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
 
         const serviceFee = 2;
 
-        const stkResponse = await initiateSTKPush(formattedPhoneNumber, serviceFee, taskId);
+        /*const stkResponse = await initiateSTKPush(formattedPhoneNumber, serviceFee, taskId);
         res.status(202).json({
             message: 'STK Push initiated; enter your PIN on your phone.',
             checkoutId: stkResponse.id,
-        });
+        });*/
 
+        const task = await confirmPayment(taskId);
+        res.status(202).json({ message: "Payment successful", task});
 
     } catch (error: any) {
         console.error('confirmPaymentController error:', error);
+        
+        if (error.message === 'NotFound'){
+            res.status(404).json({ message: 'Task not found'})
+            return;
+        }
         res.status(500).json({ message: 'Unable to process payment' });
     }
 };

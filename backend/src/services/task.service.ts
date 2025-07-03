@@ -1,5 +1,5 @@
 import { Task, TaskStatus } from '../generated/prisma';
-import { appliedTask, userReturned } from '../lib/selectTypes';
+import { appliedTask, taskersApplied, userReturned } from '../lib/selectTypes';
 import { PrismaClient } from '../generated/prisma';
 
 const prisma = new PrismaClient();
@@ -128,7 +128,25 @@ export async function applyForTask(userId: string, taskId: string):Promise<any>{
 
     return newApplication;
 }
+export const confirmPayment = async(taskId: string) => {
+    const task = await prisma.task.update({
+        where: {id: taskId},
+        data: {
+            status: 'PENDING',
+            updatedAt: new Date(),
+        },
+        select: {
+            taskPoster: { select: userReturned },
+            taskerAssigned: { select: userReturned },
+            taskersApplied: { select: taskersApplied},
+        }
+    });
 
+    if (!task) throw new Error('NotFound');
+
+    return task;
+
+}
 export const completeTask = async(taskId: string, userId: string) => {
     const task = await prisma.task.findUnique({ where: {id: taskId}});
     if (!task) throw new Error('NotFound');
