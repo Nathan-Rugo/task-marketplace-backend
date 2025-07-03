@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { loginUser, signupUser } from '../services/authentication.service';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { generateToken } from '../lib/utils/generateToken';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 
 const prisma = new PrismaClient();
 const jwtSecret = process.env.JWT_SECRET;
@@ -13,6 +13,7 @@ export async function signup(req: Request, res: Response): Promise<void> {
 
   if (!username || !email || !password) {
     res.status(400).json({ message: 'Username, email, and password are required.' });
+    return;
   }
 
   try {
@@ -50,7 +51,7 @@ export async function login(req: Request, res: Response): Promise<void> {
         }
 
         if (error.message === 'MissingPassword') {
-          res.status(403).json({ message: 'This account is incomplete. Please reset your password or use Google login.' });
+        res.status(403).json({ message: 'This account is incomplete. Please reset your password or use Google login.' });
         }
 
         console.error('Login error:', error);
@@ -69,12 +70,7 @@ export async function validateToken (req: Request, res: Response): Promise<void>
 
     const token = authHeader.split(' ')[1];
 
-    if (!jwtSecret) {
-      res.status(500).json({ error: 'JWT secret is not configured on the server.' });
-      return;
-    }
-
-    const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
+    const decoded = jwt.verify(token, jwtSecret!) as JwtPayload;
 
     if (!decoded?.email) {
       res.status(401).json({ error: 'Invalid token: missing user.' });

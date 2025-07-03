@@ -1,7 +1,7 @@
 import { TaskStatus, Task } from '../generated/prisma';
 import { userReturned, taskersApplied } from '../lib/selectTypes';
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../generated/prisma';
 
 const prisma = new PrismaClient();
 

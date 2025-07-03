@@ -3,7 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import http from 'http';
 import { Server as IOServer } from 'socket.io';
-import { PrismaClient } from '@prisma/client';
 
 import authRoutes from './routes/authentication.routes';
 import userRoutes from './routes/user.routes';
@@ -33,8 +32,6 @@ io.on('connection', (socket) => {
   });
 });
 
-const prisma = new PrismaClient();
-
 app.use(cors());
 app.use(express.json());
 
@@ -46,7 +43,6 @@ app.get('/', (req, res) => {
 // Health check
 app.get('/health', async (req, res) => {
   try {
-    await prisma.$queryRaw`SELECT 1`;
     res.status(200).json({ status: 'ok' });
   } catch (error) {
     res.status(500).json({ status: 'error', error });
