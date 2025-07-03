@@ -26,13 +26,45 @@ export async function mpesaCallbackController(req: Request, res: Response) {
 
     const task = await prisma.task.findUnique({ where: { id: taskId } });
 
+    if (status === 'FAILED') {
+        // mark the task back to CREATED (or however you want to represent failure)
+        await prisma.task.update({
+        where: { id: taskId },
+        data: { status: 'CREATED', updatedAt: new Date() },
+        });
+
+        // notify the frontend of the failure
+        io.to(checkoutId).emit('paymentResult', {
+        checkoutId,
+        status: 'FAILED',
+        task,
+        error: 'Payment failed or was cancelled',
+        });
+
+        return;
+    }
+
     // Update if completed
     if (status === 'COMPLETED') {
         await prisma.task.update({
         where: { id: taskId },
         data: { status: 'PENDING', updatedAt: new Date() },
         });
+
+        io.to(checkoutId).emit('paymentResult', {
+        checkoutId,
+        status: 'PENDING',
+        task,
+        });
+        return;
     }
 
-    io.to(checkoutId).emit('paymentResult', { checkoutId, status, task });
+    // 3️⃣ (Optional) handle other statuses like PENDING
+    if (status === 'PENDING') {
+        io.to(checkoutId).emit('paymentResult', {
+        checkoutId,
+        status: 'PENDING',
+        task,
+        });
+    }
 }

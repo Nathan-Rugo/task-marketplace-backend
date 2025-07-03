@@ -4,6 +4,6 @@ import { intasendWebhookValidation } from '../middlewares/webhook.middleware';
 
 const router = Router();
 
-router.post('/confirm/callback', intasendWebhookValidation, mpesaCallbackController);
+router.post('/confirm/callback', express.json(), intasendWebhookValidation, mpesaCallbackController);
 
 export default router;
