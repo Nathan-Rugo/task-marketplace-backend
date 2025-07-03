@@ -4,67 +4,72 @@ import { PrismaClient } from '../generated/prisma';
 
 const prisma = new PrismaClient();
 
-const stkFailureMessages: Record<number, string> = {
-    1:    'Insufficient balance or user declined Fuliza overdraft',
-    1001: 'Another transaction is in progress, please try again later',
-    1019: 'Transaction expired (timed out before PIN entry)',
-    1032: 'Transaction cancelled by user',
-    1037: 'No response from user (PIN not entered in time)',
-    2001: 'Invalid initiator credentials',
-    9999: 'Failed to send STK Push request, please contact support',
-};
-
-
 export async function mpesaCallbackController(req: Request, res: Response) {
-    console.log('🔥 IntaSend WEBHOOK:', req.body);
+    // 1️⃣ Immediate 200 OK so IntaSend stops retrying
     res.sendStatus(200);
 
-    const { data } = req.body;
-    const { id: checkoutId, status, api_ref } = data || {};
+    // 2️⃣ Log the raw webhook so you can inspect it
+    console.log('🔥 WEBHOOK body:', JSON.stringify(req.body, null, 2));
+
+    const event = req.body;
+    const data = event.data;
+    if (!data) {
+        console.warn('⚠️ No "data" field in webhook');
+        return;
+    }
+
+    const { id: checkoutId, state, api_ref } = data;
     const taskId = api_ref?.replace(/^TASK-/, '');
-    if (!taskId || !checkoutId) return;
+    if (!checkoutId || !taskId) {
+        console.warn(`⚠️ Missing checkoutId or taskId — checkoutId=${checkoutId}, taskId=${taskId}`);
+        return;
+    }
 
+    // 3️⃣ Fetch current task
     const task = await prisma.task.findUnique({ where: { id: taskId } });
-
-    if (status === 'FAILED') {
-        // mark the task back to CREATED (or however you want to represent failure)
-        await prisma.task.update({
-        where: { id: taskId },
-        data: { status: 'CREATED', updatedAt: new Date() },
-        });
-
-        // notify the frontend of the failure
-        io.to(checkoutId).emit('paymentResult', {
-        checkoutId,
-        status: 'FAILED',
-        task,
-        error: 'Payment failed or was cancelled',
-        });
-
+    if (!task) {
+        console.warn(`⚠️ No task found for id ${taskId}`);
         return;
     }
 
-    // Update if completed
-    if (status === 'COMPLETED') {
+    // 4️⃣ Branch on state
+    switch (state) {
+        case 'FAILED':
         await prisma.task.update({
-        where: { id: taskId },
-        data: { status: 'PENDING', updatedAt: new Date() },
+            where: { id: taskId },
+            data: { status: 'CREATED', updatedAt: new Date() },
         });
-
         io.to(checkoutId).emit('paymentResult', {
-        checkoutId,
-        status: 'PENDING',
-        task,
+            checkoutId,
+            status: 'FAILED',
+            task,
+            error: 'Payment failed or was cancelled',
         });
-        return;
-    }
+        break;
 
-    // 3️⃣ (Optional) handle other statuses like PENDING
-    if (status === 'PENDING') {
-        io.to(checkoutId).emit('paymentResult', {
-        checkoutId,
-        status: 'PENDING',
-        task,
+        case 'COMPLETE':
+        case 'COMPLETED': // depending on exact payload key
+        await prisma.task.update({
+            where: { id: taskId },
+            data: { status: 'PENDING', updatedAt: new Date() },
         });
+        io.to(checkoutId).emit('paymentResult', {
+            checkoutId,
+            status: 'PENDING',
+            task,
+        });
+        break;
+
+        case 'PENDING':
+        case 'PROCESSING':
+        io.to(checkoutId).emit('paymentResult', {
+            checkoutId,
+            status: 'PENDING',
+            task,
+        });
+        break;
+
+        default:
+        console.warn(`⚠️ Unhandled state: ${state}`);
     }
 }
