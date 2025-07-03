@@ -7,70 +7,77 @@ import { generateToken } from '../lib/utils/generateToken';
 const jwtSecret = process.env.JWT_SECRET;
 const prisma = new PrismaClient();
 
-export async function signup(req: Request, res: Response): Promise<Response> {
+export async function signup(req: Request, res: Response): Promise<void> {
   const { username, email, password, phone, profilePicture } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).json({ message: 'Username, email, and password are required.' });
+    res.status(400).json({ message: 'Username, email, and password are required.' });
   }
 
   try {
     const result = await signupUser(username, email, password, phone, profilePicture);
-    return res.status(201).json({result});
+    res.status(201).json({result});
   } catch (error: any) {
     switch (error.message) {
       case 'EmailExists':
-        return res.status(409).json({ message: 'Email is already in use.' });
+        res.status(409).json({ message: 'Email is already in use.' });
       case 'UsernameExists':
-        return res.status(409).json({ message: 'Username is already taken.' });
+        res.status(409).json({ message: 'Username is already taken.' });
       case 'PhoneExists':
-        return res.status(409).json({ message: 'Phone number already linked to another account.' });
+        res.status(409).json({ message: 'Phone number already linked to another account.' });
       case 'AlreadyExists':
-        return res.status(409).json({ message: 'Account already exists with provided credentials.' });
+        res.status(409).json({ message: 'Account already exists with provided credentials.' });
       default:
         console.error('Signup error:', error);
-        return res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Internal server error' });
     }
   }
 }
 
-export async function login(req: Request, res: Response): Promise<Response> {
+export async function login(req: Request, res: Response): Promise<void> {
     try {
         const { email, password } = req.body;
         const { token, user } = await loginUser(email, password);
-        return res.status(200).json({ message: 'Login Successful', token, user });
+        res.status(200).json({ message: 'Login Successful', token, user });
     } catch (error: any) {
         if (error.message === 'InvalidCredentials') {
-          return res.status(401).json({ message: 'Invalid email or password.' });
+          res.status(401).json({ message: 'Invalid email or password.' });
         }
 
         if (error.message === 'UseGoogleLogin') {
-          return res.status(403).json({ message: 'This account was created using Google. Please log in with Google instead.' });
+          res.status(403).json({ message: 'This account was created using Google. Please log in with Google instead.' });
         }
 
         if (error.message === 'MissingPassword') {
-          return res.status(403).json({ message: 'This account is incomplete. Please reset your password or use Google login.' });
+          res.status(403).json({ message: 'This account is incomplete. Please reset your password or use Google login.' });
         }
 
         console.error('Login error:', error);
-        return res.status(500).json({ message: 'Internal server error.' });
+        res.status(500).json({ message: 'Internal server error.' });
     }
 }
 
-export async function validateToken (req: Request, res: Response): Promise<Response> {
+export async function validateToken (req: Request, res: Response): Promise<void> {
     try {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Authorization token missing or malformed.' });
+      res.status(401).json({ error: 'Authorization token missing or malformed.' });
+      return;
     }
 
     const token = authHeader.split(' ')[1];
 
-    const decoded = jwt.verify(token, jwtSecret!) as JwtPayload;
+    if (!jwtSecret) {
+      res.status(500).json({ error: 'JWT secret is not configured on the server.' });
+      return;
+    }
+
+    const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
 
     if (!decoded?.email) {
-      return res.status(401).json({ error: 'Invalid token: missing user.' });
+      res.status(401).json({ error: 'Invalid token: missing user.' });
+      return;
     }
 
     const user = await prisma.user.findUnique({ where: { email: decoded.email },
@@ -82,19 +89,20 @@ export async function validateToken (req: Request, res: Response): Promise<Respo
 
 
     if (!user) {
-      return res.status(401).json({ error: 'User not found.' });
+      res.status(401).json({ error: 'User not found.' });
+      return;
     }
 
-    return res.status(200).json({ message: 'Token Validated', user });
+    res.status(200).json({ message: 'Token Validated', user });
 
   } catch (error: any) {
     console.error('Token validation failed:', error.message);
-    return res.status(401).json({ error: 'Invalid or expired token.' });
+    res.status(401).json({ error: 'Invalid or expired token.' });
   }
 };
 
 
-export async function googleSignup(req: Request, res: Response): Promise<Response> {
+export async function googleSignup(req: Request, res: Response): Promise<void> {
   const { username, email, profilePicture } = req.body;
 
   try {
@@ -104,7 +112,8 @@ export async function googleSignup(req: Request, res: Response): Promise<Respons
     });
 
     if (existingUser) {
-      return res.status(409).json({ message: 'Email already in use.' });
+      res.status(409).json({ message: 'Email already in use.' });
+      return;
     }
 
     // Create user
@@ -126,21 +135,22 @@ export async function googleSignup(req: Request, res: Response): Promise<Respons
     });
     const { password, ...userSafe } = newUser;
 
-    return res.status(201).json({ message: 'Google signup successful', token, user: userSafe });
+    res.status(201).json({ message: 'Google signup successful', token, user: userSafe });
   } catch (error) {
     console.error('Google Sign Up error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
 
-export async function googleLogin(req: Request, res: Response): Promise<Response> {
+export async function googleLogin(req: Request, res: Response): Promise<void> {
   const { email, username, profilePicture } = req.body;
 
   try {
     // 1. Check for Strathmore email
     if (!email.endsWith('@strathmore.edu')) {
-      return res.status(403).json({ message: 'Only @strathmore.edu emails are allowed.' });
+      res.status(403).json({ message: 'Only @strathmore.edu emails are allowed.' });
+      return;
     }
 
     // 2. Check if user exists
@@ -158,6 +168,7 @@ export async function googleLogin(req: Request, res: Response): Promise<Response
           authProvider: 'GOOGLE'
         }
       });
+      return;
     }
 
     // 4. Generate JWT token
@@ -166,11 +177,11 @@ export async function googleLogin(req: Request, res: Response): Promise<Response
     // 5. Exclude password
     const { password, ...userSafe } = user;
 
-    return res.status(200).json({ message: 'Google login successfull', token, user: userSafe });
+    res.status(200).json({ message: 'Google login successfull', token, user: userSafe });
 
   } catch (error) {
     console.error('Google Login Error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
@@ -179,7 +190,8 @@ export async function logout(req: Request, res: Response){
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Authorization token missing or malformed.' });
+      res.status(401).json({ error: 'Authorization token missing or malformed.' });
+      return;
     }
 
     const token = authHeader.split(' ')[1];
@@ -188,16 +200,17 @@ export async function logout(req: Request, res: Response){
     const decoded: any = jwt.decode(token);
     
     if (!decoded || !decoded.exp) {
-      return res.status(400).json({ message: 'Invalid token' });
+      res.status(400).json({ message: 'Invalid token' });
+      return;
     }
 
     const expiresAt = new Date(decoded.exp * 1000);
     await prisma.revokedToken.create({ data: { token, expiresAt } });
 
-    return res.status(200).json({ message: 'Logged out; token revoked' })
+    res.status(200).json({ message: 'Logged out; token revoked' })
   } catch (error: any) {
     console.log('logout error', error);
-    return res.status(500).json({message: 'Internal Server Error'});
+    res.status(500).json({message: 'Internal Server Error'});
   }
     
 }
