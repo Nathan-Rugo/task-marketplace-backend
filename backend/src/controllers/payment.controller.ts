@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '../generated/prisma';
 import { mpesaCallBack } from '../services/payment.service';
 import { io } from '../index';
 import { taskersApplied, userReturned } from '../lib/selectTypes';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 

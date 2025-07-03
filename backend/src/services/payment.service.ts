@@ -1,6 +1,7 @@
-// src/services/payment.service.ts
-import { PrismaClient, TaskStatus, Task } from '../generated/prisma';
+import { TaskStatus, Task } from '../generated/prisma';
 import { userReturned, taskersApplied } from '../lib/selectTypes';
+
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 

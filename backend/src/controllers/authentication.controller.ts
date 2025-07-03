@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { loginUser, signupUser } from '../services/authentication.service';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { PrismaClient } from '../generated/prisma';
 import { generateToken } from '../lib/utils/generateToken';
+import { PrismaClient } from '@prisma/client';
 
-const jwtSecret = process.env.JWT_SECRET;
 const prisma = new PrismaClient();
+const jwtSecret = process.env.JWT_SECRET;
+
 
 export async function signup(req: Request, res: Response): Promise<void> {
   const { username, email, password, phone, profilePicture } = req.body;

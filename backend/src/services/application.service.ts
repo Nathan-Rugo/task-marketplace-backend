@@ -1,7 +1,9 @@
-import { PrismaClient, Task, TaskApplicationStatus, TaskApplications } from "../generated/prisma";
+import { Task, TaskApplicationStatus, TaskApplications } from "../generated/prisma";
 import { userReturned } from "../lib/selectTypes";
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
+
 
 export async function acceptTask(posterId: string, applicationId: string):Promise<Task>{
     const application = await prisma.taskApplications.findUnique({

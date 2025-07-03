@@ -1,5 +1,8 @@
-import { PrismaClient, Task, TaskStatus, TaskApplications, TaskApplicationStatus } from '../generated/prisma';
-import { appliedTask, taskersApplied, userReturned } from '../lib/selectTypes';
+import { Task, TaskStatus } from '../generated/prisma';
+import { appliedTask, userReturned } from '../lib/selectTypes';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export interface CreateTaskDTO{
     title: string;
@@ -8,8 +11,6 @@ export interface CreateTaskDTO{
     location: string;
     offer: number;
 }
-
-const prisma = new PrismaClient();
 
 
 // Create a new task posted by userId.

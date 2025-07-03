@@ -1,6 +1,6 @@
-import { PrismaClient, Task, TaskStatus, TaskApplicationStatus} from '../generated/prisma';
+import { Task, TaskStatus, TaskApplicationStatus} from '../generated/prisma';
 import { userReturned, appliedTask, taskStatusAppliedFilter } from '../lib/selectTypes';
-import { isTasker } from '../middlewares/isTasker.middleware';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
