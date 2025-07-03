@@ -15,7 +15,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 export const io = new IOServer(server, {
-    cors: { origin: '*' }
+    cors: { origin: ['exp://192.168.0.37:8081', 'http://localhost:3000'], methods: ['GET', 'POST'] }
 });
 
 // Handle socket connections
