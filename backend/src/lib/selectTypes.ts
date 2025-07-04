@@ -18,8 +18,6 @@ export const taskStatusAppliedFilter = {
     status: {
         in: [
         TaskStatus.PENDING,
-        TaskStatus.IN_PROGRESS,
-        TaskStatus.REVIEW,
         ],
     },
 };

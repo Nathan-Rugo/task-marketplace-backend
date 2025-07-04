@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import { upload } from '../lib/utils/multer';
+import { uploadToCloud } from '../lib/utils/uploadToCloud';
 import { findUser, getTasksByUserId, toggleAvailability, editProfile } from '../services/user.services';
 
 // Returns the profile of the authenticated user.
@@ -58,29 +60,28 @@ export const toggleAvailabilityController = async(req: Request, res: Response) =
     }
 }
 
-export const editProfileController = async(req: Request, res: Response) => {
-    try {
+export const editProfileController = [
+    upload.single('image'),
+    async (req: Request, res: Response) => {
+        try {
         const userId = req.user?.id;
-        const body = req.body
+        if (!userId) res.status(401).json({ message: 'Missing user id' });
 
-        if(!userId) res.status(401).json({message: 'Missing user id'});
+        const body = req.body as any;
+        if (req.file) {
+            const { url } = await uploadToCloud(req.file);
+            body.profilePicture = url;
+        }
 
         const user = await editProfile(userId, body);
-        res.status(202).json({ message: 'User details updated', user});
-    } catch (error: any) {
-        console.error('editProfileController error: ', error);
-
-        if (error.message === 'InvalidName'){
-            res.status(403).json({ message: 'Invalid username' });
+        res.status(202).json({ message: 'User details updated', user });
+        } catch (error: any) {
+        console.error('editProfileController error:', error);
+        if (error.message === 'InvalidName') res.status(403).json({ message: 'Invalid username' });
+        if (error.message === 'InvalidEmail') res.status(403).json({ message: 'Invalid email', detail: 'Use a valid Strathmore address.' });
+        if (error.message === 'InvalidPhone') res.status(403).json({ message: 'Invalid phone number', detail: 'Enter a 07xxxxxxxx' });
+        if (error.message === 'Invalid file type') res.status(406).json({ message: 'Invalid file type', detail: 'File is over 5MB. Please upload a smaller file'});
+        res.status(500).json({ message: 'Internal Server Error' });
         }
-
-        if (error.message === 'InvalidEmail'){
-            res.status(403).json({ message: 'Invalid email', detail: 'Please use a valid Strathmore email address.'});
-        }
-
-        if (error.message === 'InvalidPhone'){
-            res.status(403).json({ message: 'Invalid phone number', detail: 'Please enter a 07xxxxxxxx'});
-        }
-        res.status(500).json({ message: 'Internal Server Error'})
     }
-}
+];

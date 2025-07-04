@@ -43,18 +43,39 @@ export async function getTasksByUserId(userId: string): Promise<{
     posted: Task[];
     applied: AppliedInfo[];
     }> {
-    const assigned = await prisma.task.findMany({
+
+    var cutOffdate = new Date();
+    cutOffdate.setDate(cutOffdate.getDate() - 3);
+
+    const assigned0 = await prisma.task.findMany({
         where: {
         taskerAssignedId: userId,
-        status: { in: [TaskStatus.IN_PROGRESS, TaskStatus.REVIEW] },
+        status: { in: [TaskStatus.COMPLETED] },
+        updatedAt: {
+            gte: cutOffdate,
+            lte: new Date()
+        }},
+        orderBy: { updatedAt: 'desc' },
+    });
+
+    const assigned1 = await prisma.task.findMany({
+        where: {
+            taskerAssignedId: userId,
+            status: { in: [TaskStatus.IN_PROGRESS, TaskStatus.REVIEW] },
         },
         orderBy: { updatedAt: 'desc' },
     });
 
-    const posted = await prisma.task.findMany({
+    const assigned = assigned0.concat(assigned1).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());;
+
+    const posted0 = await prisma.task.findMany({
         where: {
         taskPosterId: userId,
-        status: { in: [TaskStatus.CREATED, TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.REVIEW, TaskStatus.COMPLETED] },
+        status: { in: [TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.REVIEW] },
+        createdAt: {
+            gte: cutOffdate,
+            lte: new Date()
+        }
         },
         orderBy: { updatedAt: 'desc' },
         include: {
@@ -62,6 +83,24 @@ export async function getTasksByUserId(userId: string): Promise<{
             taskPoster: {select: userReturned},
         }
     });
+
+    const posted1 = await prisma.task.findMany({
+        where: {
+        taskPosterId: userId,
+        status: { in: [TaskStatus.COMPLETED] },
+        updatedAt: {
+            gte: cutOffdate,
+            lte: new Date()
+        }
+        },
+        orderBy: { updatedAt: 'desc' },
+        include: {
+            taskerAssigned: {select: userReturned},
+            taskPoster: {select: userReturned},
+        }
+    });
+
+    const posted = posted0.concat(posted1).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
     const applied = await prisma.taskApplications.findMany({
         where: {
@@ -91,7 +130,8 @@ export async function toggleAvailability(userId: string): Promise<User>{
     const user = await prisma.user.update({
         where: {id: userId},
         data: {
-            isTasker: !toggle?.isTasker
+            isTasker: !toggle?.isTasker,
+            updatedAt: new Date()
         },
         select: userReturned
     });
@@ -103,6 +143,7 @@ export async function editProfile(userId: string, body: User): Promise<User>{
     const name = body.username;
     const email = body.email;
     const phone = body.phone;
+    const image = body.profilePicture;
     const regexEmail = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?strathmore\.edu$/
     const regexPhone = /^(?:\+254|0)7\d{8}$/
 
@@ -116,9 +157,35 @@ export async function editProfile(userId: string, body: User): Promise<User>{
             username: name,
             email: email,
             phone: phone,
+            profilePicture: image,
+            updatedAt: new Date()
         },
         select: userReturned
     });
 
     return user;
+}
+
+export async function updateReviewStats(userId: string, rating: number){
+    const user = await prisma.user.findUnique({
+        where: {id: userId}
+    })
+    
+    if (!user) throw new Error('NotFound');
+    
+    var newRating;
+
+    if (user.rating == 0){
+        newRating = rating;
+    }else{
+        newRating = (rating + user.rating) / 2;
+    }
+
+    await prisma.user.update({
+        where: {id: userId},
+        data: {
+            rating: newRating,
+            updatedAt: new Date()
+        }
+    });
 }
