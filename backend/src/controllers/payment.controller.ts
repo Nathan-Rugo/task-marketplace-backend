@@ -26,9 +26,9 @@ export async function mpesaCallbackController(req: Request, res: Response) {
         }
 
         const task = await confirmPayment(payment.taskId, payment.userId, {
-        amount: metad.Amount,
-        receipt: metad.MpesaReceiptNumber,
-        paidAt: new Date(),
+            amount: metad.Amount,
+            receipt: metad.MpesaReceiptNumber,
+            paidAt: new Date(),
         });
 
         io.emit(`payment:${payment.taskId}`, { status: 'PENDING', task });

@@ -124,7 +124,11 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
             formattedPhone = '254' + phoneNumber.slice(1);
         }
 
-        if (phoneNumber.startsWith('254')) {
+        else if (phoneNumber.startsWith('+254')) {
+            formattedPhone = phoneNumber.slice(1);
+        }
+
+        else if (phoneNumber.startsWith('254')) {
             formattedPhone = phoneNumber;
         }
 
