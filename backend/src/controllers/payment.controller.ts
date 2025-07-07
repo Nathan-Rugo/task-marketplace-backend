@@ -6,6 +6,7 @@ import {io} from '../index';
 const prisma = new PrismaClient();
 
 export async function mpesaCallbackController(req: Request, res: Response) {
+    console.log('📲 M-PESA callback received:', JSON.stringify(req.body));
     const stk = req.body.Body.stkCallback;
     const { ResultCode, CheckoutRequestID, CallbackMetadata } = stk;
 
@@ -32,8 +33,10 @@ export async function mpesaCallbackController(req: Request, res: Response) {
         });
 
         io.emit(`payment:${payment.taskId}`, { status: 'PENDING', task });
+        res.json({ ResultCode: 0, ResultDesc: 'Accepted' });
     }
-
-    res.json({ ResultCode: 1, ResultDesc: 'Failed' });
+    else{
+        res.json({ ResultCode: 1, ResultDesc: 'Failed' });
+    }
 }
 
