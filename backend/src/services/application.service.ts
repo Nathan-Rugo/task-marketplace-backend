@@ -1,4 +1,4 @@
-import { TaskApplicationStatus, TaskApplications } from "../generated/prisma";
+import { TaskApplicationStatus, TaskApplications, Task } from "../generated/prisma";
 import { userReturned } from "../lib/selectTypes";
 import { PrismaClient } from '../generated/prisma';
 
@@ -28,4 +28,52 @@ export const getTaskApplicationsByTaskId = async(taskId: string): Promise<TaskAp
     if (!tasksApplications) throw new Error('NotFound');
     console.log(tasksApplications);
     return tasksApplications;
-}
+};
+
+export async function acceptTask(posterId: string, applicationId: string):Promise<Task>{
+    const application = await prisma.taskApplications.findUnique({
+        where: { id: applicationId },
+        include: { task: true },
+    });
+
+    if (!application) throw new Error("Application not found");
+
+
+    if (application.task.taskPosterId !== posterId) {
+        throw new Error("Not authorized to accept this application");
+    }
+
+    if (application.status === 'ACCEPTED'){
+        throw new Error('PreviouslyAccepted');
+    }
+
+    await prisma.taskApplications.update({
+        where: { id: applicationId },
+        data: { status: "ACCEPTED" },
+    });
+
+    await prisma.taskApplications.updateMany({
+        where: {
+            NOT: [
+            { id: applicationId},
+            ],
+            taskId: application.taskId,
+        },
+        data: { status: 'DENIED'}
+    })
+
+    const updatedTask = await prisma.task.update({
+        where: { id: application.taskId },
+        data: {
+            taskerAssignedId: application.userId,
+            status: "IN_PROGRESS",
+            updatedAt: new Date()
+        },
+        include: {
+            taskPoster: {select: userReturned},
+            taskerAssigned: {select: userReturned}
+        }
+    });
+
+    return updatedTask;
+};

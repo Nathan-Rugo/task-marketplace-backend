@@ -1,5 +1,5 @@
 import { Task, TaskStatus, TaskApplicationStatus} from '../generated/prisma';
-import { userReturned, appliedTask, taskStatusAppliedFilter } from '../lib/selectTypes';
+import { userReturned, appliedTask, taskStatusAppliedFilter, taskersApplied } from '../lib/selectTypes';
 import { PrismaClient } from '../generated/prisma';
 
 const prisma = new PrismaClient();
@@ -56,6 +56,10 @@ export async function getTasksByUserId(userId: string): Promise<{
             lte: new Date()
         }},
         orderBy: { updatedAt: 'desc' },
+        include:{
+            taskerAssigned: {select: userReturned},
+            taskPoster: {select: userReturned},
+        },
     });
 
     const assigned1 = await prisma.task.findMany({
@@ -64,6 +68,11 @@ export async function getTasksByUserId(userId: string): Promise<{
             status: { in: [TaskStatus.IN_PROGRESS, TaskStatus.REVIEW] },
         },
         orderBy: { updatedAt: 'desc' },
+        include:{
+            taskerAssigned: {select: userReturned},
+            taskPoster: {select: userReturned},
+        },
+        
     });
 
     const assigned = assigned0.concat(assigned1).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());;
@@ -81,6 +90,7 @@ export async function getTasksByUserId(userId: string): Promise<{
         include: {
             taskerAssigned: {select: userReturned},
             taskPoster: {select: userReturned},
+            taskersApplied: {select: taskersApplied}
         }
     });
 
@@ -97,6 +107,7 @@ export async function getTasksByUserId(userId: string): Promise<{
         include: {
             taskerAssigned: {select: userReturned},
             taskPoster: {select: userReturned},
+            taskersApplied: {select: taskersApplied}
         }
     });
 
@@ -112,6 +123,7 @@ export async function getTasksByUserId(userId: string): Promise<{
             appliedAt: true,
             status: true,
             task: {select: appliedTask},
+            user: {select: userReturned}
         },
     });
 

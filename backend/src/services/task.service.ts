@@ -124,54 +124,6 @@ export async function applyForTask(userId: string, taskId: string):Promise<any>{
     return newApplication;
 };
 
-export async function acceptTask(posterId: string, applicationId: string):Promise<Task>{
-    const application = await prisma.taskApplications.findUnique({
-        where: { id: applicationId },
-        include: { task: true },
-    });
-
-    if (!application) throw new Error("Application not found");
-
-
-    if (application.task.taskPosterId !== posterId) {
-        throw new Error("Not authorized to accept this application");
-    }
-
-    if (application.status === 'ACCEPTED'){
-        throw new Error('PreviouslyAccepted');
-    }
-
-    await prisma.taskApplications.update({
-        where: { id: applicationId },
-        data: { status: "ACCEPTED" },
-    });
-
-    await prisma.taskApplications.updateMany({
-        where: {
-            NOT: [
-            { id: applicationId},
-            ],
-            taskId: application.taskId,
-        },
-        data: { status: 'DENIED'}
-    })
-
-    const updatedTask = await prisma.task.update({
-        where: { id: application.taskId },
-        data: {
-            taskerAssignedId: application.userId,
-            status: "IN_PROGRESS",
-            updatedAt: new Date()
-        },
-        include: {
-            taskPoster: {select: userReturned},
-            taskerAssigned: {select: userReturned}
-        }
-    });
-
-    return updatedTask;
-};
-
 export const confirmPayment = async(taskId: string, userId: string) => {
     await prisma.user.update({
         where: {id: userId},
