@@ -1,4 +1,4 @@
-import { Task, TaskStatus } from '../generated/prisma';
+import { Task, TaskApplicationStatus, TaskStatus } from '../generated/prisma';
 import { appliedTask, taskersApplied, userReturned } from '../lib/selectTypes';
 import { PrismaClient } from '../generated/prisma';
 import { updateReviewStats } from './user.services';
@@ -99,6 +99,9 @@ export async function applyForTask(userId: string, taskId: string):Promise<any>{
         throw new Error('You cannot apply for your own task');
     }
 
+    if (task.status !== TaskStatus.PENDING){
+        throw new Error('Unauthorised')
+    }
 
     const existingApplication = await prisma.taskApplications.findFirst({
         where: {
@@ -198,6 +201,13 @@ export const cancelTask = async(taskId: string, userId:string) => {
         },
         include: {
             taskPoster: {select: userReturned},
+        }
+    });
+
+    await prisma.taskApplications.updateMany({
+        where: {taskId: taskId},
+        data: {
+            status: TaskApplicationStatus.DENIED
         }
     });
 

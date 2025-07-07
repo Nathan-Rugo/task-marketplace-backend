@@ -81,7 +81,10 @@ export const editProfileController = [
     async (req: Request, res: Response) => {
         try {
         const userId = req.user?.id;
-        if (!userId) res.status(401).json({ message: 'Missing user id' });
+        if (!userId){
+            res.status(401).json({ message: 'Missing user id' });
+            return;
+        }
 
         const body = req.body as any;
         if (req.file) {

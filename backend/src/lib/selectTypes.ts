@@ -37,7 +37,7 @@ export const appliedTask = {
     taskersApplied: false,
     reviews: true,
     createdAt: true,
-    updatedAt: false
+    updatedAt: true
 }
 
 export const taskersApplied = {

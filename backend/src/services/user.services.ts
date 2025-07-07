@@ -80,11 +80,7 @@ export async function getTasksByUserId(userId: string): Promise<{
     const posted0 = await prisma.task.findMany({
         where: {
         taskPosterId: userId,
-        status: { in: [TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.REVIEW] },
-        createdAt: {
-            gte: cutOffdate,
-            lte: new Date()
-        }
+        status: { in: [TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.REVIEW, TaskStatus.CREATED] },
         },
         orderBy: { updatedAt: 'desc' },
         include: {
@@ -113,10 +109,15 @@ export async function getTasksByUserId(userId: string): Promise<{
 
     const posted = posted0.concat(posted1).sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
-    const applied = await prisma.taskApplications.findMany({
+    const applied0 = await prisma.taskApplications.findMany({
         where: {
             userId: userId,
             task: taskStatusAppliedFilter,
+            status: {in: [TaskApplicationStatus.ACCEPTED, TaskApplicationStatus.DENIED]},
+            appliedAt: {
+                gte: cutOffdate,
+                lte: new Date
+            }
         },
         select: {
             id: true,
@@ -125,7 +126,26 @@ export async function getTasksByUserId(userId: string): Promise<{
             task: {select: appliedTask},
             user: {select: userReturned}
         },
+        orderBy: {appliedAt: 'desc'}
     });
+
+    const applied1 = await prisma.taskApplications.findMany({
+        where: {
+            userId: userId,
+            task: taskStatusAppliedFilter,
+            status: {in: [TaskApplicationStatus.PENDING]},
+        },
+        select: {
+            id: true,
+            appliedAt: true,
+            status: true,
+            task: {select: appliedTask},
+            user: {select: userReturned}
+        },
+        orderBy: {appliedAt: 'desc'}
+    });
+
+    const applied = applied0.concat(applied1).sort((a, b) => new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime())
 
     return { assigned: assigned, posted: posted, applied: applied};
 }
@@ -151,32 +171,40 @@ export async function toggleAvailability(userId: string): Promise<User>{
     return user;
 }
 
-export async function editProfile(userId: string, body: User): Promise<User>{
-    const name = body.username;
-    const email = body.email;
-    const phone = body.phone;
-    const image = body.profilePicture;
-    const regexEmail = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?strathmore\.edu$/
-    const regexPhone = /^(?:\+254|0)7\d{8}$/
+export async function editProfile(userId: string, body: Partial<User>): Promise<User> {
+    const existingUser = await prisma.user.findUnique({
+        where: { id: userId },
+    });
 
-    if (!name || name.length == 0) throw new Error('InvalidName');
+    if (!existingUser) throw new Error('UserNotFound');
+
+    const name = body.username ?? existingUser.username;
+    const email = body.email ?? existingUser.email;
+    const phone = body.phone ?? existingUser.phone;
+    const image = body.profilePicture ?? existingUser.profilePicture;
+
+    const regexEmail = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.)?strathmore\.edu$/;
+    const regexPhone = /^(?:\+254|0)7\d{8}$/;
+
+    if (!name || name.length === 0) throw new Error('InvalidName');
     if (!email || !regexEmail.test(email)) throw new Error('InvalidEmail');
     if (!phone || !regexPhone.test(phone)) throw new Error('InvalidPhone');
 
     const user = await prisma.user.update({
-        where: {id: userId},
+        where: { id: userId },
         data: {
             username: name,
             email: email,
             phone: phone,
             profilePicture: image,
-            updatedAt: new Date()
+            updatedAt: new Date(),
         },
-        select: userReturned
+        select: userReturned,
     });
 
     return user;
 }
+
 
 export async function updateReviewStats(userId: string, rating: number){
     const user = await prisma.user.findUnique({
