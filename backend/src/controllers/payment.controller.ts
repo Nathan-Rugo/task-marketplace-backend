@@ -21,7 +21,8 @@ export async function mpesaCallbackController(req: Request, res: Response) {
         where: { checkoutRequestId: CheckoutRequestID },
         });
         if (!payment) {
-        return res.json({ ResultCode: 1, ResultDesc: 'Failed – unknown request' });
+            res.json({ ResultCode: 1, ResultDesc: 'Failed – unknown request' });
+            return;
         }
 
         const task = await confirmPayment(payment.taskId, payment.userId, {
@@ -33,6 +34,6 @@ export async function mpesaCallbackController(req: Request, res: Response) {
         io.emit(`payment:${payment.taskId}`, { status: 'PENDING', task });
     }
 
-    return res.json({ ResultCode: 1, ResultDesc: 'Failed' });
+    res.json({ ResultCode: 1, ResultDesc: 'Failed' });
 }
 
