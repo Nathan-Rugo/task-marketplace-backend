@@ -110,47 +110,37 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
         const taskId = req.params.id;
         const userId = req.user?.id;
         const { phoneNumber } = req.body;
-        let formattedPhoneNumber;
-
-        if(!userId){
-            res.status(404).json( {message: 'Missing user id'} );
-            return;
+        if (!userId) {
+            res.status(401).json({ message: 'Missing user id' });
         }
-
         if (!phoneNumber) {
-        res.status(400).json({ message: 'Phone number is required' });
-        return;
+            res.status(400).json({ message: 'Phone number is required' });
+            return
         }
+
+        let formattedPhone;
 
         if (phoneNumber.startsWith('0')) {
-            formattedPhoneNumber = '254' + phoneNumber.slice(1);
+            formattedPhone = '254' + phoneNumber.slice(1);
         }
 
         if (phoneNumber.startsWith('254')) {
-            formattedPhoneNumber = phoneNumber;
+            formattedPhone = phoneNumber;
         }
 
         const serviceFee = 2;
+        const { CheckoutRequestID } = await initiateSTKPush(formattedPhone, serviceFee, taskId, userId);
 
-        /*const stkResponse = await initiateSTKPush(formattedPhoneNumber, serviceFee, taskId);
         res.status(202).json({
-            message: 'STK Push initiated; enter your PIN on your phone.',
-            checkoutId: stkResponse.id,
-        });*/
-
-        const task = await confirmPayment(taskId, userId);
-        res.status(202).json({ message: "Payment successful", task});
-
+        message: 'STK Push initiated; enter PIN on your phone.',
+        checkoutRequestID: CheckoutRequestID,
+        });
     } catch (error: any) {
         console.error('confirmPaymentController error:', error);
-        
-        if (error.message === 'NotFound'){
-            res.status(404).json({ message: 'Task not found'})
-            return;
-        }
-        res.status(500).json({ message: 'Unable to process payment' });
+        res.status(500).json({ message: 'Unable to initiate payment' });
     }
 };
+
 
 export const cancelTaskController = async (req: Request, res: Response) => {
     try {

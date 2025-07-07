@@ -15,21 +15,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 export const io = new IOServer(server, {
-    cors: { origin: ['exp://192.168.0.37:8081', 'http://localhost:3000'], methods: ['GET', 'POST'] }
-});
-
-// Handle socket connections
-io.on('connection', (socket) => {
-  console.log('Client connected', socket.id);
-
-  // Client asks to join a room for this CheckoutRequestID
-  socket.on('joinPaymentRoom', (checkoutId: string) => {
-    socket.join(checkoutId);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Client disconnected', socket.id);
-  });
+    cors: { origin: '*' }
 });
 
 app.use(cors());
@@ -59,4 +45,8 @@ const PORT = process.env.PORT || 4000;
 const HOST = process.env.HOST || 'localhost';
 app.listen(PORT, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
+});
+
+io.on('connection', (socket) => {
+  console.log('User connected', socket.id);
 });

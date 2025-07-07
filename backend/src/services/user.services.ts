@@ -116,7 +116,7 @@ export async function getTasksByUserId(userId: string): Promise<{
             status: {in: [TaskApplicationStatus.ACCEPTED, TaskApplicationStatus.DENIED]},
             appliedAt: {
                 gte: cutOffdate,
-                lte: new Date
+                lte: new Date()
             }
         },
         select: {

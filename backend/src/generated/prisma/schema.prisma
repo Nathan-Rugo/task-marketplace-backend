@@ -29,6 +29,7 @@ model User {
   taskApplications TaskApplications[]
   reviewsGiven     Review[]           @relation("ReviewsGiven")
   reviewsReceived  Review[]           @relation("ReviewsReceived")
+  Payment          Payment[]
 }
 
 model Task {
@@ -50,8 +51,9 @@ model Task {
 
   reviews Review[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  Payment   Payment[]
 }
 
 model TaskApplications {
@@ -89,6 +91,26 @@ model RevokedToken {
   expiresAt DateTime
 }
 
+model Payment {
+  id                String        @id @default(uuid())
+  taskId            String
+  userId            String
+  checkoutRequestId String        @unique
+  merchantRequestId String?
+  status            PaymentStatus @default(PENDING)
+  amount            Float
+  paidAt            DateTime?
+  receipt           String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([taskId, userId])
+  @@map("payments")
+}
+
 enum TaskStatus {
   CREATED
   REVIEW
@@ -107,4 +129,10 @@ enum TaskApplicationStatus {
 enum AuthProvider {
   CREDENTIALS
   GOOGLE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
 }

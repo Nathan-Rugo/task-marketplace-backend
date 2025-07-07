@@ -1,75 +1,38 @@
 import { Request, Response } from 'express';
-import { io } from '../index';
 import { PrismaClient } from '../generated/prisma';
+import { confirmPayment } from '../services/task.service';
+import {io} from '../index';
 
 const prisma = new PrismaClient();
 
 export async function mpesaCallbackController(req: Request, res: Response) {
-    // 1️⃣ Immediate 200 OK so IntaSend stops retrying
-    res.sendStatus(200);
+    const stk = req.body.Body.stkCallback;
+    const { ResultCode, CheckoutRequestID, CallbackMetadata } = stk;
 
-    // 2️⃣ Log the raw webhook so you can inspect it
-    console.log('🔥 WEBHOOK body:', JSON.stringify(req.body, null, 2));
+    if (ResultCode === 0 && CallbackMetadata) {
+        type MpesaItem = { Name: string; Value?: any };
+        const metad = (CallbackMetadata.Item as MpesaItem[])
+        .reduce<Record<string, any>>((acc, item) => {
+            if (item.Value !== undefined) acc[item.Name] = item.Value;
+            return acc;
+        }, {});
 
-    const event = req.body;
-    const data = event.data;
-    if (!data) {
-        console.warn('⚠️ No "data" field in webhook');
-        return;
+        const payment = await prisma.payment.findUnique({
+        where: { checkoutRequestId: CheckoutRequestID },
+        });
+        if (!payment) {
+        return res.json({ ResultCode: 1, ResultDesc: 'Failed – unknown request' });
+        }
+
+        const task = await confirmPayment(payment.taskId, payment.userId, {
+        amount: metad.Amount,
+        receipt: metad.MpesaReceiptNumber,
+        paidAt: new Date(),
+        });
+
+        io.emit(`payment:${payment.taskId}`, { status: 'PENDING', task });
     }
 
-    const { id: checkoutId, state, api_ref } = data;
-    const taskId = api_ref?.replace(/^TASK-/, '');
-    if (!checkoutId || !taskId) {
-        console.warn(`⚠️ Missing checkoutId or taskId — checkoutId=${checkoutId}, taskId=${taskId}`);
-        return;
-    }
-
-    // 3️⃣ Fetch current task
-    const task = await prisma.task.findUnique({ where: { id: taskId } });
-    if (!task) {
-        console.warn(`⚠️ No task found for id ${taskId}`);
-        return;
-    }
-
-    // 4️⃣ Branch on state
-    switch (state) {
-        case 'FAILED':
-        await prisma.task.update({
-            where: { id: taskId },
-            data: { status: 'CREATED', updatedAt: new Date() },
-        });
-        io.to(checkoutId).emit('paymentResult', {
-            checkoutId,
-            status: 'FAILED',
-            task,
-            error: 'Payment failed or was cancelled',
-        });
-        break;
-
-        case 'COMPLETE':
-        case 'COMPLETED': // depending on exact payload key
-        await prisma.task.update({
-            where: { id: taskId },
-            data: { status: 'PENDING', updatedAt: new Date() },
-        });
-        io.to(checkoutId).emit('paymentResult', {
-            checkoutId,
-            status: 'PENDING',
-            task,
-        });
-        break;
-
-        case 'PENDING':
-        case 'PROCESSING':
-        io.to(checkoutId).emit('paymentResult', {
-            checkoutId,
-            status: 'PENDING',
-            task,
-        });
-        break;
-
-        default:
-        console.warn(`⚠️ Unhandled state: ${state}`);
-    }
+    return res.json({ ResultCode: 1, ResultDesc: 'Failed' });
 }
+

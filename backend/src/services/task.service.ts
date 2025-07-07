@@ -127,32 +127,37 @@ export async function applyForTask(userId: string, taskId: string):Promise<any>{
     return newApplication;
 };
 
-export const confirmPayment = async(taskId: string, userId: string) => {
-    await prisma.user.update({
-        where: {id: userId},
+export const confirmPayment = async (
+    taskId: string,
+    userId: string,
+    { amount, receipt, paidAt }: { amount: number; receipt: string; paidAt: Date }
+    ) => {
+    return prisma.$transaction(async (tx) => {
+        await tx.payment.update({
+        where: { taskId_userId: { taskId, userId } },
         data: {
-            tasksPosted: {increment: 1}
-        }
-    });
-
-    const task = await prisma.task.update({
-        where: {id: taskId},
-        data: {
-            status: 'PENDING',
-            updatedAt: new Date(),
+            status: 'SUCCESS',
+            amount,
+            receipt,
+            paidAt,
         },
+        });
+
+        const task = await tx.task.update({
+        where: { id: taskId },
+        data: { status: 'PENDING', updatedAt: new Date() },
         select: {
             taskPoster: { select: userReturned },
             taskerAssigned: { select: userReturned },
-            taskersApplied: { select: taskersApplied},
-        }
+            taskersApplied: { select: taskersApplied },
+        },
+        });
+
+        if (!task) throw new Error('NotFound');
+        return task;
     });
+};
 
-    if (!task) throw new Error('NotFound');
-
-    return task;
-
-}
 export const completeTask = async(taskId: string, userId: string) => {
     const task = await prisma.task.findUnique({ where: {id: taskId}});
     if (!task) throw new Error('NotFound');

@@ -174,6 +174,20 @@ exports.Prisma.RevokedTokenScalarFieldEnum = {
   expiresAt: 'expiresAt'
 };
 
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  userId: 'userId',
+  checkoutRequestId: 'checkoutRequestId',
+  merchantRequestId: 'merchantRequestId',
+  status: 'status',
+  amount: 'amount',
+  paidAt: 'paidAt',
+  receipt: 'receipt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -220,6 +234,15 @@ exports.Prisma.ReviewOrderByRelevanceFieldEnum = {
 exports.Prisma.RevokedTokenOrderByRelevanceFieldEnum = {
   token: 'token'
 };
+
+exports.Prisma.PaymentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  userId: 'userId',
+  checkoutRequestId: 'checkoutRequestId',
+  merchantRequestId: 'merchantRequestId',
+  receipt: 'receipt'
+};
 exports.AuthProvider = exports.$Enums.AuthProvider = {
   CREDENTIALS: 'CREDENTIALS',
   GOOGLE: 'GOOGLE'
@@ -240,12 +263,19 @@ exports.TaskApplicationStatus = exports.$Enums.TaskApplicationStatus = {
   DENIED: 'DENIED'
 };
 
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  PENDING: 'PENDING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Task: 'Task',
   TaskApplications: 'TaskApplications',
   Review: 'Review',
-  RevokedToken: 'RevokedToken'
+  RevokedToken: 'RevokedToken',
+  Payment: 'Payment'
 };
 
 /**
