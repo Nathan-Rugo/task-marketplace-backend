@@ -10,6 +10,8 @@ export interface CreateTaskDTO{
     description: string;
     category: string;
     location: string;
+    latitude?: number;
+    longitude?: number;
     offer: number;
 }
 
@@ -25,8 +27,9 @@ export async function createTask(
             description: dto.description,
             category:    dto.category,
             location:    dto.location,
+            latitude:    dto.latitude,
+            longitude:   dto.longitude,
             offer:       dto.offer,
-            // Link the poster by their user ID
             taskPoster: {
                 connect: { id: userId },
             },

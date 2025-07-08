@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, confirmPayment, completeTask, cancelTask, giveReview, approveTaskCompleted} from '../services/task.service';
 import { initiateSTKPush } from '../lib/utils/initiateSTKPush';
 import { PrismaClient, TaskStatus } from '../generated/prisma';
+import { userReturned } from '../lib/selectTypes';
 
 const prisma = new PrismaClient();
 
@@ -15,6 +16,8 @@ export async function postTask(req: Request, res: Response){
             description: req.body.description,
             category: req.body.category,
             location: req.body.location,
+            latitude: req.body.latitude,
+            longitude: req.body.longitude,
             offer: req.body.offer
         };
 
@@ -153,9 +156,20 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
             return;
         }
 
+        const task = await prisma.task.update({
+            where: { id: taskId },
+            data: {
+                status: TaskStatus.PENDING
+            },
+            include: {
+                taskPoster: {select: userReturned},
+                taskerAssigned: {select: userReturned},
+            }
+        });
+
         res.status(202).json({
             message: 'STK Push initiated successfully',
-            checkoutRequestId: CheckoutRequestID,
+            task
         });
         
     } catch (error: any) {
