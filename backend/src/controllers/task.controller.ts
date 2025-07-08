@@ -138,7 +138,12 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
 
         const serviceFee = 2;
 
-        const { CheckoutRequestID } = await initiateSTKPush(formattedPhone, serviceFee, taskId, userId);
+        const { ResponseCode } = await initiateSTKPush(formattedPhone, serviceFee, taskId, userId);
+
+        if (ResponseCode != 0){
+            res.status(401).json({message: "STK Push Failed"})
+            return;
+        }
 
         const task = await prisma.task.update({
             where: { id: taskId, status: TaskStatus.CREATED},
