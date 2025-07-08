@@ -14,9 +14,9 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
 export const io = new IOServer(server, {
     cors: { origin: '*', methods: ['GET', 'POST']},
-    
 });
 
 app.use(cors());
@@ -44,7 +44,7 @@ app.use('/payments', paymentRoutes);
 
 const PORT = process.env.PORT || 4000;
 const HOST = process.env.HOST || 'localhost';
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
 });
 

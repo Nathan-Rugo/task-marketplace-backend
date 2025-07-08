@@ -3,6 +3,6 @@ import { mpesaCallbackController } from '../controllers/payment.controller';
 
 const router = Router();
 
-router.post('/confirm/callback', express.json(), mpesaCallbackController);
+router.post('/confirm/callback', mpesaCallbackController);
 
 export default router;
