@@ -1,6 +1,4 @@
 <?php
-// callback.php
-
 // Security headers
 header('Content-Type: application/json');
 header('X-Content-Type-Options: nosniff');
