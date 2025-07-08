@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, confirmPayment, completeTask, cancelTask, giveReview, approveTaskCompleted} from '../services/task.service';
 import { initiateSTKPush } from '../lib/utils/initiateSTKPush';
-import { PrismaClient, TaskStatus } from '@prisma/client';
+import { PrismaClient, TaskStatus } from '../generated/prisma';
 
 const prisma = new PrismaClient();
 
