@@ -138,24 +138,24 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
 
         const serviceFee = 2;
 
-        const { ResponseCode } = await initiateSTKPush(formattedPhone, serviceFee, taskId, userId);
+        const { CheckoutRequestId, ResponseCode, CustomerMessage } = await initiateSTKPush(
+            formattedPhone,
+            serviceFee,
+            taskId,
+            userId
+        );
 
-        if (ResponseCode != 0){
-            res.status(401).json({message: "STK Push Failed"})
+        if (ResponseCode !== '0') {
+            res.status(502).json({
+                message: 'STK Push failed to initiate',
+                detail: CustomerMessage || 'Unknown error from Safaricom',
+            });
             return;
         }
 
-        const task = await prisma.task.update({
-            where: { id: taskId, status: TaskStatus.CREATED},
-            data: {
-                status: 'PENDING',
-                updatedAt: new Date()
-            }
-        });
-
         res.status(202).json({
-            message: 'STK Push initiated',
-            task
+            message: 'STK Push initiated successfully',
+            checkoutRequestId: CheckoutRequestId,
         });
         
     } catch (error: any) {
@@ -206,9 +206,9 @@ export const giveReviewController = async (req: Request, res: Response) => {
         const reviewerId = req.user?.id;
         const { rating, comment, revieweeId } = req.body;
 
-        const review = await giveReview(taskId, reviewerId, rating, comment || undefined, revieweeId);
+        const task = await giveReview(taskId, reviewerId, rating, comment || undefined, revieweeId);
 
-        res.status(201).json({message: 'Review submitted!', review});
+        res.status(201).json({message: 'Review submitted!', task});
     }catch(error: any){
         console.error('giveReviewController error: ', error);
 

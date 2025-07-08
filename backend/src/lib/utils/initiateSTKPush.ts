@@ -28,7 +28,7 @@ export async function initiateSTKPush(phone: string, amount: number, taskId: str
         { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    const { CheckoutRequestID, MerchantRequestID, ResponseCode } = resp.data;
+    const { CheckoutRequestId, ResponseCode, CustomerMessage } = resp.data;
 
-    return { ResponseCode };
+    return { CheckoutRequestId, ResponseCode, CustomerMessage };
 }
