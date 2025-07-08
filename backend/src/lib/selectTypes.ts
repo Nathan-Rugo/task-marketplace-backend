@@ -39,6 +39,7 @@ export const appliedTask = {
     taskersApplied: false,
     taskerRated: true,
     taskPosterRated: true,
+    taskPayment: true,
     reviews: true,
     createdAt: true,
     updatedAt: true
