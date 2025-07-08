@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import { createTask, CreateTaskDTO, findTasks, findTasksById, applyForTask, confirmPayment, completeTask, cancelTask, giveReview, approveTaskCompleted} from '../services/task.service';
 import { initiateSTKPush } from '../lib/utils/initiateSTKPush';
+import { PrismaClient, TaskStatus } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function postTask(req: Request, res: Response){
     try{
@@ -110,40 +113,52 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
         const taskId = req.params.id;
         const userId = req.user?.id;
         const { phoneNumber } = req.body;
-        if (!userId) {
+
+        if (!userId){
             res.status(401).json({ message: 'Missing user id' });
-        }
-        if (!phoneNumber) {
-            res.status(400).json({ message: 'Phone number is required' });
             return
         }
+        if (!phoneNumber){
+            res.status(400).json({ message: 'Phone number is required' });
+            return;
+        }
 
-        let formattedPhone;
+        let formattedPhone: string;
 
         if (phoneNumber.startsWith('0')) {
             formattedPhone = '254' + phoneNumber.slice(1);
-        }
-
-        else if (phoneNumber.startsWith('+254')) {
+        } else if (phoneNumber.startsWith('+254')) {
             formattedPhone = phoneNumber.slice(1);
-        }
-
-        else if (phoneNumber.startsWith('254')) {
+        } else if (phoneNumber.startsWith('254')) {
             formattedPhone = phoneNumber;
+        } else {
+            res.status(400).json({ message: 'Invalid phone number format' });
+            return
         }
 
         const serviceFee = 2;
+
         const { CheckoutRequestID } = await initiateSTKPush(formattedPhone, serviceFee, taskId, userId);
 
-        res.status(202).json({
-        message: 'STK Push initiated; enter PIN on your phone.',
-        checkoutRequestID: CheckoutRequestID,
+        const task = await prisma.task.update({
+            where: { id: taskId, status: TaskStatus.CREATED},
+            data: {
+                status: 'PENDING',
+                updatedAt: new Date()
+            }
         });
+
+        res.status(202).json({
+            message: 'STK Push initiated',
+            task
+        });
+        
     } catch (error: any) {
         console.error('confirmPaymentController error:', error);
         res.status(500).json({ message: 'Unable to initiate payment' });
     }
 };
+
 
 
 export const cancelTaskController = async (req: Request, res: Response) => {
@@ -202,6 +217,17 @@ export const giveReviewController = async (req: Request, res: Response) => {
         }
         if (error.message === 'AlreadyReview'){
             res.status(406).json({ message: 'You have already left a review'});
+            return
+        }
+
+        if (error.message === 'NotAuthorised'){
+            res.status(401).json({message: 'You are not authorised to give a review'});
+            return;
+        }
+
+        if (error.message === 'TaskNotFound'){
+            res.status(401).json({message: 'Task not found'});
+            return
         }
 
         res.status(500).json({ message: 'Internal Server Error '});

@@ -15,7 +15,8 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 export const io = new IOServer(server, {
-    cors: { origin: '*' }
+    cors: { origin: '*', methods: ['GET', 'POST']},
+    
 });
 
 app.use(cors());

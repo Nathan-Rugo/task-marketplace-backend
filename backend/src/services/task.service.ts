@@ -220,7 +220,7 @@ export const cancelTask = async(taskId: string, userId:string) => {
 };
 
 export const giveReview = async(taskId:string, reviewerId: string, rating: number, comment: string, revieweeId: string) => {
-    if (!rating || !revieweeId || reviewerId) throw new Error('MissingData');
+    if (!rating || !revieweeId || !reviewerId) throw new Error('MissingData');
     if (!taskId) throw new Error('MissingTaskId');
 
     const existingReview = await prisma.review.findFirst({
@@ -234,7 +234,7 @@ export const giveReview = async(taskId:string, reviewerId: string, rating: numbe
 
     await updateReviewStats(revieweeId, rating);
 
-    const review = await prisma.review.create({
+    await prisma.review.create({
         data: {
             taskId: taskId,
             reviewerId: reviewerId,
@@ -252,7 +252,9 @@ export const giveReview = async(taskId:string, reviewerId: string, rating: numbe
         }
     });
 
-    return review;
+    const task = await updateTaskRatingStats(reviewerId, taskId);
+
+    return task;
 }
 
 export const approveTaskCompleted = async(taskId: string, userId: string) => {
@@ -296,5 +298,42 @@ export const approveTaskCompleted = async(taskId: string, userId: string) => {
     });
 
     return approved;
+}
+
+export const updateTaskRatingStats = async(reviewerId:string, taskId: string) => {
+    const task = await prisma.task.findUnique({
+        where: {
+            id: taskId,
+        }
+    });
+
+    if (!task) throw new Error('TaskNotFound');
+
+    if(task.taskPosterId == reviewerId){
+        return await prisma.task.update({
+            where: {id: taskId},
+            data: {taskPosterRated: true},
+            include: {
+                taskerAssigned: {select: userReturned},
+                taskPoster: {select: userReturned},
+                taskersApplied: {select: taskersApplied}
+            }
+        })
+    }
+    else if (task.taskerAssignedId == reviewerId){
+        return await prisma.task.update({
+            where: {id: taskId},
+            data: {taskerRated: true},
+            include: {
+                taskerAssigned: {select: userReturned},
+                taskPoster: {select: userReturned},
+                taskersApplied: {select: taskersApplied}
+            }
+        })
+    }
+    else{
+        throw new Error('NotAuthorised');
+    }
+
 }
 

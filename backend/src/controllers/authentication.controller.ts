@@ -3,6 +3,7 @@ import { loginUser, signupUser } from '../services/authentication.service';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { generateToken } from '../lib/utils/generateToken';
 import { PrismaClient } from '../generated/prisma';
+import { userReturned } from '../lib/selectTypes';
 
 const prisma = new PrismaClient();
 const jwtSecret = process.env.JWT_SECRET;
@@ -78,10 +79,7 @@ export async function validateToken (req: Request, res: Response): Promise<void>
     }
 
     const user = await prisma.user.findUnique({ where: { email: decoded.email },
-      select: {
-        password: false,
-        id: true
-      }
+      select: userReturned
     })
 
 

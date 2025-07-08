@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `Task` ADD COLUMN `latitude` DOUBLE NOT NULL DEFAULT 0.0,
+    ADD COLUMN `longitude` DOUBLE NOT NULL DEFAULT 0.0,
+    ADD COLUMN `taskPosterRated` BOOLEAN NOT NULL DEFAULT false,
+    ADD COLUMN `taskerRated` BOOLEAN NOT NULL DEFAULT false;

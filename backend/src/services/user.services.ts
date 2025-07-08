@@ -1,6 +1,7 @@
 import { Task, TaskStatus, TaskApplicationStatus} from '../generated/prisma';
 import { userReturned, appliedTask, taskStatusAppliedFilter, taskersApplied } from '../lib/selectTypes';
 import { PrismaClient } from '../generated/prisma';
+import e from 'express';
 
 const prisma = new PrismaClient();
 
@@ -207,18 +208,23 @@ export async function editProfile(userId: string, body: Partial<User>): Promise<
 
 
 export async function updateReviewStats(userId: string, rating: number){
-    const user = await prisma.user.findUnique({
-        where: {id: userId}
-    })
-    
-    if (!user) throw new Error('NotFound');
-    
-    var newRating;
+    const totalRatings = await prisma.review.findMany({
+        where: { revieweeId: userId },
+        select: { rating: true }
+    });
 
-    if (user.rating == 0){
-        newRating = rating;
+    let stats;
+    if (totalRatings.length === 0) {
+        stats = 0;
+    } else {
+        stats = totalRatings.reduce((acc, curr) => acc + curr.rating, 0);
+    }
+    
+    let newRating;
+    if (stats == 0){
+        newRating = 0
     }else{
-        newRating = (rating + user.rating) / 2;
+        newRating = (stats + rating) / (totalRatings.length + 1)
     }
 
     await prisma.user.update({

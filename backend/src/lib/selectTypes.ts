@@ -28,6 +28,8 @@ export const appliedTask = {
     description: true,
     category: true,
     location: true,
+    latitude: true,
+    longitude: true,
     offer: true,      
     status: true,
     taskPosterId: true,
@@ -35,6 +37,8 @@ export const appliedTask = {
     taskerAssignedId: true,
     taskerAssigned: {select: userReturned},
     taskersApplied: false,
+    taskerRated: true,
+    taskPosterRated: true,
     reviews: true,
     createdAt: true,
     updatedAt: true

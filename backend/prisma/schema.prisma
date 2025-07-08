@@ -38,8 +38,12 @@ model Task {
   description String
   category    String
   location    String
+  latitude    Float       @default(0.0)
+  longitude   Float       @default(0.0)
   offer       Float
   status      TaskStatus @default(CREATED)
+  taskerRated Boolean    @default(false)
+  taskPosterRated Boolean @default(false)
 
   taskPosterId String
   taskPoster   User   @relation("PostedTasks", fields: [taskPosterId], references: [id])

@@ -2697,10 +2697,14 @@ export namespace Prisma {
   }
 
   export type TaskAvgAggregateOutputType = {
+    latitude: number | null
+    longitude: number | null
     offer: number | null
   }
 
   export type TaskSumAggregateOutputType = {
+    latitude: number | null
+    longitude: number | null
     offer: number | null
   }
 
@@ -2710,8 +2714,12 @@ export namespace Prisma {
     description: string | null
     category: string | null
     location: string | null
+    latitude: number | null
+    longitude: number | null
     offer: number | null
     status: $Enums.TaskStatus | null
+    taskerRated: boolean | null
+    taskPosterRated: boolean | null
     taskPosterId: string | null
     taskerAssignedId: string | null
     createdAt: Date | null
@@ -2724,8 +2732,12 @@ export namespace Prisma {
     description: string | null
     category: string | null
     location: string | null
+    latitude: number | null
+    longitude: number | null
     offer: number | null
     status: $Enums.TaskStatus | null
+    taskerRated: boolean | null
+    taskPosterRated: boolean | null
     taskPosterId: string | null
     taskerAssignedId: string | null
     createdAt: Date | null
@@ -2738,8 +2750,12 @@ export namespace Prisma {
     description: number
     category: number
     location: number
+    latitude: number
+    longitude: number
     offer: number
     status: number
+    taskerRated: number
+    taskPosterRated: number
     taskPosterId: number
     taskerAssignedId: number
     createdAt: number
@@ -2749,10 +2765,14 @@ export namespace Prisma {
 
 
   export type TaskAvgAggregateInputType = {
+    latitude?: true
+    longitude?: true
     offer?: true
   }
 
   export type TaskSumAggregateInputType = {
+    latitude?: true
+    longitude?: true
     offer?: true
   }
 
@@ -2762,8 +2782,12 @@ export namespace Prisma {
     description?: true
     category?: true
     location?: true
+    latitude?: true
+    longitude?: true
     offer?: true
     status?: true
+    taskerRated?: true
+    taskPosterRated?: true
     taskPosterId?: true
     taskerAssignedId?: true
     createdAt?: true
@@ -2776,8 +2800,12 @@ export namespace Prisma {
     description?: true
     category?: true
     location?: true
+    latitude?: true
+    longitude?: true
     offer?: true
     status?: true
+    taskerRated?: true
+    taskPosterRated?: true
     taskPosterId?: true
     taskerAssignedId?: true
     createdAt?: true
@@ -2790,8 +2818,12 @@ export namespace Prisma {
     description?: true
     category?: true
     location?: true
+    latitude?: true
+    longitude?: true
     offer?: true
     status?: true
+    taskerRated?: true
+    taskPosterRated?: true
     taskPosterId?: true
     taskerAssignedId?: true
     createdAt?: true
@@ -2891,8 +2923,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude: number
+    longitude: number
     offer: number
     status: $Enums.TaskStatus
+    taskerRated: boolean
+    taskPosterRated: boolean
     taskPosterId: string
     taskerAssignedId: string | null
     createdAt: Date
@@ -2924,8 +2960,12 @@ export namespace Prisma {
     description?: boolean
     category?: boolean
     location?: boolean
+    latitude?: boolean
+    longitude?: boolean
     offer?: boolean
     status?: boolean
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskPosterId?: boolean
     taskerAssignedId?: boolean
     createdAt?: boolean
@@ -2946,15 +2986,19 @@ export namespace Prisma {
     description?: boolean
     category?: boolean
     location?: boolean
+    latitude?: boolean
+    longitude?: boolean
     offer?: boolean
     status?: boolean
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskPosterId?: boolean
     taskerAssignedId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "category" | "location" | "offer" | "status" | "taskPosterId" | "taskerAssignedId" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
+  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "category" | "location" | "latitude" | "longitude" | "offer" | "status" | "taskerRated" | "taskPosterRated" | "taskPosterId" | "taskerAssignedId" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     taskPoster?: boolean | UserDefaultArgs<ExtArgs>
     taskerAssigned?: boolean | Task$taskerAssignedArgs<ExtArgs>
@@ -2979,8 +3023,12 @@ export namespace Prisma {
       description: string
       category: string
       location: string
+      latitude: number
+      longitude: number
       offer: number
       status: $Enums.TaskStatus
+      taskerRated: boolean
+      taskPosterRated: boolean
       taskPosterId: string
       taskerAssignedId: string | null
       createdAt: Date
@@ -3364,8 +3412,12 @@ export namespace Prisma {
     readonly description: FieldRef<"Task", 'String'>
     readonly category: FieldRef<"Task", 'String'>
     readonly location: FieldRef<"Task", 'String'>
+    readonly latitude: FieldRef<"Task", 'Float'>
+    readonly longitude: FieldRef<"Task", 'Float'>
     readonly offer: FieldRef<"Task", 'Float'>
     readonly status: FieldRef<"Task", 'TaskStatus'>
+    readonly taskerRated: FieldRef<"Task", 'Boolean'>
+    readonly taskPosterRated: FieldRef<"Task", 'Boolean'>
     readonly taskPosterId: FieldRef<"Task", 'String'>
     readonly taskerAssignedId: FieldRef<"Task", 'String'>
     readonly createdAt: FieldRef<"Task", 'DateTime'>
@@ -7680,8 +7732,12 @@ export namespace Prisma {
     description: 'description',
     category: 'category',
     location: 'location',
+    latitude: 'latitude',
+    longitude: 'longitude',
     offer: 'offer',
     status: 'status',
+    taskerRated: 'taskerRated',
+    taskPosterRated: 'taskPosterRated',
     taskPosterId: 'taskPosterId',
     taskerAssignedId: 'taskerAssignedId',
     createdAt: 'createdAt',
@@ -8014,8 +8070,12 @@ export namespace Prisma {
     description?: StringFilter<"Task"> | string
     category?: StringFilter<"Task"> | string
     location?: StringFilter<"Task"> | string
+    latitude?: FloatFilter<"Task"> | number
+    longitude?: FloatFilter<"Task"> | number
     offer?: FloatFilter<"Task"> | number
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+    taskerRated?: BoolFilter<"Task"> | boolean
+    taskPosterRated?: BoolFilter<"Task"> | boolean
     taskPosterId?: StringFilter<"Task"> | string
     taskerAssignedId?: StringNullableFilter<"Task"> | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
@@ -8033,8 +8093,12 @@ export namespace Prisma {
     description?: SortOrder
     category?: SortOrder
     location?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
     offer?: SortOrder
     status?: SortOrder
+    taskerRated?: SortOrder
+    taskPosterRated?: SortOrder
     taskPosterId?: SortOrder
     taskerAssignedId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -8056,8 +8120,12 @@ export namespace Prisma {
     description?: StringFilter<"Task"> | string
     category?: StringFilter<"Task"> | string
     location?: StringFilter<"Task"> | string
+    latitude?: FloatFilter<"Task"> | number
+    longitude?: FloatFilter<"Task"> | number
     offer?: FloatFilter<"Task"> | number
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+    taskerRated?: BoolFilter<"Task"> | boolean
+    taskPosterRated?: BoolFilter<"Task"> | boolean
     taskPosterId?: StringFilter<"Task"> | string
     taskerAssignedId?: StringNullableFilter<"Task"> | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
@@ -8075,8 +8143,12 @@ export namespace Prisma {
     description?: SortOrder
     category?: SortOrder
     location?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
     offer?: SortOrder
     status?: SortOrder
+    taskerRated?: SortOrder
+    taskPosterRated?: SortOrder
     taskPosterId?: SortOrder
     taskerAssignedId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -8097,8 +8169,12 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter<"Task"> | string
     category?: StringWithAggregatesFilter<"Task"> | string
     location?: StringWithAggregatesFilter<"Task"> | string
+    latitude?: FloatWithAggregatesFilter<"Task"> | number
+    longitude?: FloatWithAggregatesFilter<"Task"> | number
     offer?: FloatWithAggregatesFilter<"Task"> | number
     status?: EnumTaskStatusWithAggregatesFilter<"Task"> | $Enums.TaskStatus
+    taskerRated?: BoolWithAggregatesFilter<"Task"> | boolean
+    taskPosterRated?: BoolWithAggregatesFilter<"Task"> | boolean
     taskPosterId?: StringWithAggregatesFilter<"Task"> | string
     taskerAssignedId?: StringNullableWithAggregatesFilter<"Task"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
@@ -8515,8 +8591,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     taskPoster: UserCreateNestedOneWithoutPostedTasksInput
@@ -8532,8 +8612,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskPosterId: string
     taskerAssignedId?: string | null
     createdAt?: Date | string
@@ -8549,8 +8633,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskPoster?: UserUpdateOneRequiredWithoutPostedTasksNestedInput
@@ -8566,8 +8654,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8583,8 +8675,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskPosterId: string
     taskerAssignedId?: string | null
     createdAt?: Date | string
@@ -8597,8 +8693,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8609,8 +8709,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9191,8 +9295,12 @@ export namespace Prisma {
     description?: SortOrder
     category?: SortOrder
     location?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
     offer?: SortOrder
     status?: SortOrder
+    taskerRated?: SortOrder
+    taskPosterRated?: SortOrder
     taskPosterId?: SortOrder
     taskerAssignedId?: SortOrder
     createdAt?: SortOrder
@@ -9200,6 +9308,8 @@ export namespace Prisma {
   }
 
   export type TaskAvgOrderByAggregateInput = {
+    latitude?: SortOrder
+    longitude?: SortOrder
     offer?: SortOrder
   }
 
@@ -9209,8 +9319,12 @@ export namespace Prisma {
     description?: SortOrder
     category?: SortOrder
     location?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
     offer?: SortOrder
     status?: SortOrder
+    taskerRated?: SortOrder
+    taskPosterRated?: SortOrder
     taskPosterId?: SortOrder
     taskerAssignedId?: SortOrder
     createdAt?: SortOrder
@@ -9223,8 +9337,12 @@ export namespace Prisma {
     description?: SortOrder
     category?: SortOrder
     location?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
     offer?: SortOrder
     status?: SortOrder
+    taskerRated?: SortOrder
+    taskPosterRated?: SortOrder
     taskPosterId?: SortOrder
     taskerAssignedId?: SortOrder
     createdAt?: SortOrder
@@ -9232,6 +9350,8 @@ export namespace Prisma {
   }
 
   export type TaskSumOrderByAggregateInput = {
+    latitude?: SortOrder
+    longitude?: SortOrder
     offer?: SortOrder
   }
 
@@ -10294,8 +10414,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     taskerAssigned?: UserCreateNestedOneWithoutAssignedTasksInput
@@ -10310,8 +10434,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskerAssignedId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10336,8 +10464,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     taskPoster: UserCreateNestedOneWithoutPostedTasksInput
@@ -10352,8 +10484,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskPosterId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -10517,8 +10653,12 @@ export namespace Prisma {
     description?: StringFilter<"Task"> | string
     category?: StringFilter<"Task"> | string
     location?: StringFilter<"Task"> | string
+    latitude?: FloatFilter<"Task"> | number
+    longitude?: FloatFilter<"Task"> | number
     offer?: FloatFilter<"Task"> | number
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+    taskerRated?: BoolFilter<"Task"> | boolean
+    taskPosterRated?: BoolFilter<"Task"> | boolean
     taskPosterId?: StringFilter<"Task"> | string
     taskerAssignedId?: StringNullableFilter<"Task"> | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
@@ -10991,8 +11131,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     taskPoster: UserCreateNestedOneWithoutPostedTasksInput
@@ -11007,8 +11151,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskPosterId: string
     taskerAssignedId?: string | null
     createdAt?: Date | string
@@ -11086,8 +11234,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskPoster?: UserUpdateOneRequiredWithoutPostedTasksNestedInput
@@ -11102,8 +11254,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11265,8 +11421,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     taskPoster: UserCreateNestedOneWithoutPostedTasksInput
@@ -11281,8 +11441,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskPosterId: string
     taskerAssignedId?: string | null
     createdAt?: Date | string
@@ -11419,8 +11583,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskPoster?: UserUpdateOneRequiredWithoutPostedTasksNestedInput
@@ -11435,8 +11603,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11451,8 +11623,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     taskPoster: UserCreateNestedOneWithoutPostedTasksInput
@@ -11467,8 +11643,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskPosterId: string
     taskerAssignedId?: string | null
     createdAt?: Date | string
@@ -11546,8 +11726,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskPoster?: UserUpdateOneRequiredWithoutPostedTasksNestedInput
@@ -11562,8 +11746,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11631,8 +11819,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskerAssignedId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11644,8 +11836,12 @@ export namespace Prisma {
     description: string
     category: string
     location: string
+    latitude?: number
+    longitude?: number
     offer: number
     status?: $Enums.TaskStatus
+    taskerRated?: boolean
+    taskPosterRated?: boolean
     taskPosterId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11697,8 +11893,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskerAssigned?: UserUpdateOneWithoutAssignedTasksNestedInput
@@ -11713,8 +11913,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11729,8 +11933,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11742,8 +11950,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskPoster?: UserUpdateOneRequiredWithoutPostedTasksNestedInput
@@ -11758,8 +11970,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11774,8 +11990,12 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     category?: StringFieldUpdateOperationsInput | string
     location?: StringFieldUpdateOperationsInput | string
+    latitude?: FloatFieldUpdateOperationsInput | number
+    longitude?: FloatFieldUpdateOperationsInput | number
     offer?: FloatFieldUpdateOperationsInput | number
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    taskerRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
