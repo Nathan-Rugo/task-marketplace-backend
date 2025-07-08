@@ -138,7 +138,7 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
 
         const serviceFee = 2;
 
-        const { CheckoutRequestId, ResponseCode, CustomerMessage } = await initiateSTKPush(
+        const { CheckoutRequestID, ResponseCode, CustomerMessage } = await initiateSTKPush(
             formattedPhone,
             serviceFee,
             taskId,
@@ -155,7 +155,7 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
 
         res.status(202).json({
             message: 'STK Push initiated successfully',
-            checkoutRequestId: CheckoutRequestId,
+            checkoutRequestId: CheckoutRequestID,
         });
         
     } catch (error: any) {

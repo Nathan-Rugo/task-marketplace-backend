@@ -28,7 +28,21 @@ export async function initiateSTKPush(phone: string, amount: number, taskId: str
         { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    const { CheckoutRequestId, ResponseCode, CustomerMessage } = resp.data;
+    const { CheckoutRequestID, MerchantRequestID, ResponseCode, CustomerMessage } = resp.data;
 
-    return { CheckoutRequestId, ResponseCode, CustomerMessage };
+    if (ResponseCode === '0'){
+        await prisma.payment.create({
+        data: {
+            taskId: taskId,
+            userId: userId,
+            checkoutRequestId: CheckoutRequestID,
+            merchantRequestId: MerchantRequestID,
+            status: 'PENDING',
+            amount: amount,
+            createdAt: new Date()
+        }
+    });
+    }
+
+    return { CheckoutRequestID, ResponseCode, CustomerMessage };
 }
