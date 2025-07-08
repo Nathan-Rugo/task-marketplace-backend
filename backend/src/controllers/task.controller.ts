@@ -115,45 +115,14 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
     try {
         const taskId = req.params.id;
         const userId = req.user?.id;
-        const { phoneNumber } = req.body;
 
         if (!userId){
             res.status(401).json({ message: 'Missing user id' });
             return
         }
-        if (!phoneNumber){
-            res.status(400).json({ message: 'Phone number is required' });
-            return;
-        }
-
-        let formattedPhone: string;
-
-        if (phoneNumber.startsWith('0')) {
-            formattedPhone = '254' + phoneNumber.slice(1);
-        } else if (phoneNumber.startsWith('+254')) {
-            formattedPhone = phoneNumber.slice(1);
-        } else if (phoneNumber.startsWith('254')) {
-            formattedPhone = phoneNumber;
-        } else {
-            res.status(400).json({ message: 'Invalid phone number format' });
+        if (!taskId){
+            res.status(401).json({ message: 'Missing task id' });
             return
-        }
-
-        const serviceFee = 2;
-
-        const { CheckoutRequestID, ResponseCode, CustomerMessage } = await initiateSTKPush(
-            formattedPhone,
-            serviceFee,
-            taskId,
-            userId
-        );
-
-        if (ResponseCode !== '0') {
-            res.status(502).json({
-                message: 'STK Push failed to initiate',
-                detail: CustomerMessage || 'Unknown error from Safaricom',
-            });
-            return;
         }
 
         const task = await prisma.task.update({
@@ -168,7 +137,7 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
         });
 
         res.status(202).json({
-            message: 'STK Push initiated successfully',
+            message: 'Confirmed task',
             task
         });
         
@@ -218,9 +187,9 @@ export const giveReviewController = async (req: Request, res: Response) => {
     try{
         const taskId = req.params.taskId;
         const reviewerId = req.user?.id;
-        const { rating, comment, revieweeId } = req.body;
+        const { rating, comment, revieweeId, paymentConfirmed } = req.body;
 
-        const task = await giveReview(taskId, reviewerId, rating, comment || undefined, revieweeId);
+        const task = await giveReview(taskId, reviewerId, rating, comment || undefined, revieweeId, paymentConfirmed);
 
         res.status(201).json({message: 'Review submitted!', task});
     }catch(error: any){

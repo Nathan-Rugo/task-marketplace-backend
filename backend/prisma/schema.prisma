@@ -55,6 +55,8 @@ model Task {
 
   reviews Review[]
 
+  taskPayment TaskPaymentStatus @default(UNCONFIRMED)
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())
   Payment   Payment[]
@@ -139,4 +141,11 @@ enum PaymentStatus {
   PENDING
   SUCCESS
   FAILED
+}
+
+enum TaskPaymentStatus {
+  UNCONFIRMED
+  POSTER_CONFIRMED
+  CONFIRMED
+  CONFLICT
 }

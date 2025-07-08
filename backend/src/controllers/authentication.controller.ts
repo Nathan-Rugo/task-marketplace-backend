@@ -4,32 +4,74 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { generateToken } from '../lib/utils/generateToken';
 import { PrismaClient } from '../generated/prisma';
 import { userReturned } from '../lib/selectTypes';
+import validator from 'validator';
 
 const prisma = new PrismaClient();
 const jwtSecret = process.env.JWT_SECRET;
+
+
 
 
 export async function signup(req: Request, res: Response): Promise<void> {
   const { username, email, password, phone, profilePicture } = req.body;
 
   if (!username || !email || !password) {
-    res.status(400).json({ message: 'Username, email, and password are required.' });
+    res
+      .status(400)
+      .json({ message: 'Username, email, and password are required.' });
+    return;
+  }
+
+  // Email validation
+  if (!validator.isEmail(email)) {
+    res.status(400).json({ message: 'Invalid email address.' });
+    return;
+  }
+
+  const isStrong = validator.isStrongPassword(password, {
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 0,
+    minNumbers: 1,
+    minSymbols: 0,
+  });
+
+  if (!isStrong) {
+    res.status(400).json({
+      message: 'Weak password',
+      detail:
+        'Password must be at least 8 characters and include at least one number.',
+    });
     return;
   }
 
   try {
-    const result = await signupUser(username, email, password, phone, profilePicture);
-    res.status(201).json({result});
+    const result = await signupUser(
+      username,
+      email,
+      password,
+      phone,
+      profilePicture
+    );
+    res.status(201).json({ result });
   } catch (error: any) {
     switch (error.message) {
       case 'EmailExists':
         res.status(409).json({ message: 'Email is already in use.' });
+        break;
       case 'UsernameExists':
         res.status(409).json({ message: 'Username is already taken.' });
+        break;
       case 'PhoneExists':
-        res.status(409).json({ message: 'Phone number already linked to another account.' });
+        res
+          .status(409)
+          .json({ message: 'Phone number already linked to another account.' });
+        break;
       case 'AlreadyExists':
-        res.status(409).json({ message: 'Account already exists with provided credentials.' });
+        res.status(409).json({
+          message: 'Account already exists with provided credentials.',
+        });
+        break;
       default:
         console.error('Signup error:', error);
         res.status(500).json({ message: 'Internal server error' });

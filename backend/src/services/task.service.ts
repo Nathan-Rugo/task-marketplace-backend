@@ -222,7 +222,7 @@ export const cancelTask = async(taskId: string, userId:string) => {
     return task;
 };
 
-export const giveReview = async(taskId:string, reviewerId: string, rating: number, comment: string, revieweeId: string) => {
+export const giveReview = async(taskId:string, reviewerId: string, rating: number, comment: string, revieweeId: string, paymentConfirmed: boolean) => {
     if (!rating || !revieweeId || !reviewerId) throw new Error('MissingData');
     if (!taskId) throw new Error('MissingTaskId');
 
@@ -255,7 +255,7 @@ export const giveReview = async(taskId:string, reviewerId: string, rating: numbe
         }
     });
 
-    const task = await updateTaskRatingStats(reviewerId, taskId);
+    const task = await updateTaskRatingStats(reviewerId, taskId, paymentConfirmed);
 
     return task;
 }
@@ -303,40 +303,65 @@ export const approveTaskCompleted = async(taskId: string, userId: string) => {
     return approved;
 }
 
-export const updateTaskRatingStats = async(reviewerId:string, taskId: string) => {
+export const updateTaskRatingStats = async (
+    reviewerId: string,
+    taskId: string,
+    paymentConfirmed: boolean
+    ) => {
     const task = await prisma.task.findUnique({
-        where: {
-            id: taskId,
-        }
+        where: { id: taskId },
     });
 
     if (!task) throw new Error('TaskNotFound');
 
-    if(task.taskPosterId == reviewerId){
-        return await prisma.task.update({
-            where: {id: taskId},
-            data: {taskPosterRated: true},
-            include: {
-                taskerAssigned: {select: userReturned},
-                taskPoster: {select: userReturned},
-                taskersApplied: {select: taskersApplied}
-            }
-        })
-    }
-    else if (task.taskerAssignedId == reviewerId){
-        return await prisma.task.update({
-            where: {id: taskId},
-            data: {taskerRated: true},
-            include: {
-                taskerAssigned: {select: userReturned},
-                taskPoster: {select: userReturned},
-                taskersApplied: {select: taskersApplied}
-            }
-        })
-    }
-    else{
+    const isPoster = task.taskPosterId === reviewerId;
+    const isTasker = task.taskerAssignedId === reviewerId;
+
+    if (!isPoster && !isTasker) {
         throw new Error('NotAuthorised');
     }
 
-}
+    let paymentUpdate: { taskPayment?: string } = {};
+
+    if (paymentConfirmed) {
+        const current = task.taskPayment;
+
+        if (isTasker) {
+        if (current === 'UNCONFIRMED') {
+            paymentUpdate.taskPayment = 'CONFIRMED';
+        } else if (current === 'POSTER_CONFIRMED') {
+            paymentUpdate.taskPayment = 'CONFLICT';
+        }
+        }
+
+        if (isPoster) {
+        if (current === 'UNCONFIRMED') {
+            paymentUpdate.taskPayment = 'POSTER_CONFIRMED';
+        } else if (current === 'CONFIRMED') {
+            paymentUpdate.taskPayment = 'CONFLICT';
+        }
+        }
+    }
+
+    const updateFields: any = {
+        ...paymentUpdate,
+    };
+
+    if (isPoster) updateFields.taskPosterRated = true;
+    if (isTasker) updateFields.taskerRated = true;
+
+    const updatedTask = await prisma.task.update({
+        where: { id: taskId },
+        data: updateFields,
+        include: {
+        taskerAssigned: { select: userReturned },
+        taskPoster: { select: userReturned },
+        taskersApplied: { select: taskersApplied },
+        },
+    });
+
+    return updatedTask;
+};
+
+
 

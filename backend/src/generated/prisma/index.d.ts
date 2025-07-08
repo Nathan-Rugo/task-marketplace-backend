@@ -85,6 +85,16 @@ export const PaymentStatus: {
 
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
+
+export const TaskPaymentStatus: {
+  UNCONFIRMED: 'UNCONFIRMED',
+  POSTER_CONFIRMED: 'POSTER_CONFIRMED',
+  CONFIRMED: 'CONFIRMED',
+  CONFLICT: 'CONFLICT'
+};
+
+export type TaskPaymentStatus = (typeof TaskPaymentStatus)[keyof typeof TaskPaymentStatus]
+
 }
 
 export type TaskStatus = $Enums.TaskStatus
@@ -102,6 +112,10 @@ export const AuthProvider: typeof $Enums.AuthProvider
 export type PaymentStatus = $Enums.PaymentStatus
 
 export const PaymentStatus: typeof $Enums.PaymentStatus
+
+export type TaskPaymentStatus = $Enums.TaskPaymentStatus
+
+export const TaskPaymentStatus: typeof $Enums.TaskPaymentStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -2722,6 +2736,7 @@ export namespace Prisma {
     taskPosterRated: boolean | null
     taskPosterId: string | null
     taskerAssignedId: string | null
+    taskPayment: $Enums.TaskPaymentStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2740,6 +2755,7 @@ export namespace Prisma {
     taskPosterRated: boolean | null
     taskPosterId: string | null
     taskerAssignedId: string | null
+    taskPayment: $Enums.TaskPaymentStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2758,6 +2774,7 @@ export namespace Prisma {
     taskPosterRated: number
     taskPosterId: number
     taskerAssignedId: number
+    taskPayment: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2790,6 +2807,7 @@ export namespace Prisma {
     taskPosterRated?: true
     taskPosterId?: true
     taskerAssignedId?: true
+    taskPayment?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2808,6 +2826,7 @@ export namespace Prisma {
     taskPosterRated?: true
     taskPosterId?: true
     taskerAssignedId?: true
+    taskPayment?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2826,6 +2845,7 @@ export namespace Prisma {
     taskPosterRated?: true
     taskPosterId?: true
     taskerAssignedId?: true
+    taskPayment?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2931,6 +2951,7 @@ export namespace Prisma {
     taskPosterRated: boolean
     taskPosterId: string
     taskerAssignedId: string | null
+    taskPayment: $Enums.TaskPaymentStatus
     createdAt: Date
     updatedAt: Date
     _count: TaskCountAggregateOutputType | null
@@ -2968,6 +2989,7 @@ export namespace Prisma {
     taskPosterRated?: boolean
     taskPosterId?: boolean
     taskerAssignedId?: boolean
+    taskPayment?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     taskPoster?: boolean | UserDefaultArgs<ExtArgs>
@@ -2994,11 +3016,12 @@ export namespace Prisma {
     taskPosterRated?: boolean
     taskPosterId?: boolean
     taskerAssignedId?: boolean
+    taskPayment?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "category" | "location" | "latitude" | "longitude" | "offer" | "status" | "taskerRated" | "taskPosterRated" | "taskPosterId" | "taskerAssignedId" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
+  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "category" | "location" | "latitude" | "longitude" | "offer" | "status" | "taskerRated" | "taskPosterRated" | "taskPosterId" | "taskerAssignedId" | "taskPayment" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     taskPoster?: boolean | UserDefaultArgs<ExtArgs>
     taskerAssigned?: boolean | Task$taskerAssignedArgs<ExtArgs>
@@ -3031,6 +3054,7 @@ export namespace Prisma {
       taskPosterRated: boolean
       taskPosterId: string
       taskerAssignedId: string | null
+      taskPayment: $Enums.TaskPaymentStatus
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["task"]>
@@ -3420,6 +3444,7 @@ export namespace Prisma {
     readonly taskPosterRated: FieldRef<"Task", 'Boolean'>
     readonly taskPosterId: FieldRef<"Task", 'String'>
     readonly taskerAssignedId: FieldRef<"Task", 'String'>
+    readonly taskPayment: FieldRef<"Task", 'TaskPaymentStatus'>
     readonly createdAt: FieldRef<"Task", 'DateTime'>
     readonly updatedAt: FieldRef<"Task", 'DateTime'>
   }
@@ -7740,6 +7765,7 @@ export namespace Prisma {
     taskPosterRated: 'taskPosterRated',
     taskPosterId: 'taskPosterId',
     taskerAssignedId: 'taskerAssignedId',
+    taskPayment: 'taskPayment',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -7932,6 +7958,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'TaskPaymentStatus'
+   */
+  export type EnumTaskPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskPaymentStatus'>
+    
+
+
+  /**
    * Reference to a field of type 'TaskApplicationStatus'
    */
   export type EnumTaskApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskApplicationStatus'>
@@ -8078,6 +8111,7 @@ export namespace Prisma {
     taskPosterRated?: BoolFilter<"Task"> | boolean
     taskPosterId?: StringFilter<"Task"> | string
     taskerAssignedId?: StringNullableFilter<"Task"> | string | null
+    taskPayment?: EnumTaskPaymentStatusFilter<"Task"> | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
     taskPoster?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -8101,6 +8135,7 @@ export namespace Prisma {
     taskPosterRated?: SortOrder
     taskPosterId?: SortOrder
     taskerAssignedId?: SortOrderInput | SortOrder
+    taskPayment?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     taskPoster?: UserOrderByWithRelationInput
@@ -8128,6 +8163,7 @@ export namespace Prisma {
     taskPosterRated?: BoolFilter<"Task"> | boolean
     taskPosterId?: StringFilter<"Task"> | string
     taskerAssignedId?: StringNullableFilter<"Task"> | string | null
+    taskPayment?: EnumTaskPaymentStatusFilter<"Task"> | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
     taskPoster?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -8151,6 +8187,7 @@ export namespace Prisma {
     taskPosterRated?: SortOrder
     taskPosterId?: SortOrder
     taskerAssignedId?: SortOrderInput | SortOrder
+    taskPayment?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TaskCountOrderByAggregateInput
@@ -8177,6 +8214,7 @@ export namespace Prisma {
     taskPosterRated?: BoolWithAggregatesFilter<"Task"> | boolean
     taskPosterId?: StringWithAggregatesFilter<"Task"> | string
     taskerAssignedId?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    taskPayment?: EnumTaskPaymentStatusWithAggregatesFilter<"Task"> | $Enums.TaskPaymentStatus
     createdAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
   }
@@ -8597,6 +8635,7 @@ export namespace Prisma {
     status?: $Enums.TaskStatus
     taskerRated?: boolean
     taskPosterRated?: boolean
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskPoster: UserCreateNestedOneWithoutPostedTasksInput
@@ -8620,6 +8659,7 @@ export namespace Prisma {
     taskPosterRated?: boolean
     taskPosterId: string
     taskerAssignedId?: string | null
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskersApplied?: TaskApplicationsUncheckedCreateNestedManyWithoutTaskInput
@@ -8639,6 +8679,7 @@ export namespace Prisma {
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskPoster?: UserUpdateOneRequiredWithoutPostedTasksNestedInput
@@ -8662,6 +8703,7 @@ export namespace Prisma {
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskersApplied?: TaskApplicationsUncheckedUpdateManyWithoutTaskNestedInput
@@ -8683,6 +8725,7 @@ export namespace Prisma {
     taskPosterRated?: boolean
     taskPosterId: string
     taskerAssignedId?: string | null
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -8699,6 +8742,7 @@ export namespace Prisma {
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -8717,6 +8761,7 @@ export namespace Prisma {
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -9273,6 +9318,13 @@ export namespace Prisma {
     not?: NestedEnumTaskStatusFilter<$PrismaModel> | $Enums.TaskStatus
   }
 
+  export type EnumTaskPaymentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskPaymentStatus | EnumTaskPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskPaymentStatus[]
+    notIn?: $Enums.TaskPaymentStatus[]
+    not?: NestedEnumTaskPaymentStatusFilter<$PrismaModel> | $Enums.TaskPaymentStatus
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -9303,6 +9355,7 @@ export namespace Prisma {
     taskPosterRated?: SortOrder
     taskPosterId?: SortOrder
     taskerAssignedId?: SortOrder
+    taskPayment?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9327,6 +9380,7 @@ export namespace Prisma {
     taskPosterRated?: SortOrder
     taskPosterId?: SortOrder
     taskerAssignedId?: SortOrder
+    taskPayment?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9345,6 +9399,7 @@ export namespace Prisma {
     taskPosterRated?: SortOrder
     taskPosterId?: SortOrder
     taskerAssignedId?: SortOrder
+    taskPayment?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9363,6 +9418,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTaskStatusFilter<$PrismaModel>
     _max?: NestedEnumTaskStatusFilter<$PrismaModel>
+  }
+
+  export type EnumTaskPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskPaymentStatus | EnumTaskPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskPaymentStatus[]
+    notIn?: $Enums.TaskPaymentStatus[]
+    not?: NestedEnumTaskPaymentStatusWithAggregatesFilter<$PrismaModel> | $Enums.TaskPaymentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTaskPaymentStatusFilter<$PrismaModel>
+    _max?: NestedEnumTaskPaymentStatusFilter<$PrismaModel>
   }
 
   export type EnumTaskApplicationStatusFilter<$PrismaModel = never> = {
@@ -9934,6 +9999,10 @@ export namespace Prisma {
     set?: $Enums.TaskStatus
   }
 
+  export type EnumTaskPaymentStatusFieldUpdateOperationsInput = {
+    set?: $Enums.TaskPaymentStatus
+  }
+
   export type UserUpdateOneRequiredWithoutPostedTasksNestedInput = {
     create?: XOR<UserCreateWithoutPostedTasksInput, UserUncheckedCreateWithoutPostedTasksInput>
     connectOrCreate?: UserCreateOrConnectWithoutPostedTasksInput
@@ -10339,6 +10408,13 @@ export namespace Prisma {
     not?: NestedEnumTaskStatusFilter<$PrismaModel> | $Enums.TaskStatus
   }
 
+  export type NestedEnumTaskPaymentStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskPaymentStatus | EnumTaskPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskPaymentStatus[]
+    notIn?: $Enums.TaskPaymentStatus[]
+    not?: NestedEnumTaskPaymentStatusFilter<$PrismaModel> | $Enums.TaskPaymentStatus
+  }
+
   export type NestedEnumTaskStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.TaskStatus | EnumTaskStatusFieldRefInput<$PrismaModel>
     in?: $Enums.TaskStatus[]
@@ -10347,6 +10423,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTaskStatusFilter<$PrismaModel>
     _max?: NestedEnumTaskStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTaskPaymentStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskPaymentStatus | EnumTaskPaymentStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskPaymentStatus[]
+    notIn?: $Enums.TaskPaymentStatus[]
+    not?: NestedEnumTaskPaymentStatusWithAggregatesFilter<$PrismaModel> | $Enums.TaskPaymentStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTaskPaymentStatusFilter<$PrismaModel>
+    _max?: NestedEnumTaskPaymentStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumTaskApplicationStatusFilter<$PrismaModel = never> = {
@@ -10420,6 +10506,7 @@ export namespace Prisma {
     status?: $Enums.TaskStatus
     taskerRated?: boolean
     taskPosterRated?: boolean
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskerAssigned?: UserCreateNestedOneWithoutAssignedTasksInput
@@ -10441,6 +10528,7 @@ export namespace Prisma {
     taskerRated?: boolean
     taskPosterRated?: boolean
     taskerAssignedId?: string | null
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskersApplied?: TaskApplicationsUncheckedCreateNestedManyWithoutTaskInput
@@ -10470,6 +10558,7 @@ export namespace Prisma {
     status?: $Enums.TaskStatus
     taskerRated?: boolean
     taskPosterRated?: boolean
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskPoster: UserCreateNestedOneWithoutPostedTasksInput
@@ -10491,6 +10580,7 @@ export namespace Prisma {
     taskerRated?: boolean
     taskPosterRated?: boolean
     taskPosterId: string
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskersApplied?: TaskApplicationsUncheckedCreateNestedManyWithoutTaskInput
@@ -10661,6 +10751,7 @@ export namespace Prisma {
     taskPosterRated?: BoolFilter<"Task"> | boolean
     taskPosterId?: StringFilter<"Task"> | string
     taskerAssignedId?: StringNullableFilter<"Task"> | string | null
+    taskPayment?: EnumTaskPaymentStatusFilter<"Task"> | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
   }
@@ -11137,6 +11228,7 @@ export namespace Prisma {
     status?: $Enums.TaskStatus
     taskerRated?: boolean
     taskPosterRated?: boolean
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskPoster: UserCreateNestedOneWithoutPostedTasksInput
@@ -11159,6 +11251,7 @@ export namespace Prisma {
     taskPosterRated?: boolean
     taskPosterId: string
     taskerAssignedId?: string | null
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     reviews?: ReviewUncheckedCreateNestedManyWithoutTaskInput
@@ -11240,6 +11333,7 @@ export namespace Prisma {
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskPoster?: UserUpdateOneRequiredWithoutPostedTasksNestedInput
@@ -11262,6 +11356,7 @@ export namespace Prisma {
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     reviews?: ReviewUncheckedUpdateManyWithoutTaskNestedInput
@@ -11427,6 +11522,7 @@ export namespace Prisma {
     status?: $Enums.TaskStatus
     taskerRated?: boolean
     taskPosterRated?: boolean
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskPoster: UserCreateNestedOneWithoutPostedTasksInput
@@ -11449,6 +11545,7 @@ export namespace Prisma {
     taskPosterRated?: boolean
     taskPosterId: string
     taskerAssignedId?: string | null
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskersApplied?: TaskApplicationsUncheckedCreateNestedManyWithoutTaskInput
@@ -11589,6 +11686,7 @@ export namespace Prisma {
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskPoster?: UserUpdateOneRequiredWithoutPostedTasksNestedInput
@@ -11611,6 +11709,7 @@ export namespace Prisma {
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskersApplied?: TaskApplicationsUncheckedUpdateManyWithoutTaskNestedInput
@@ -11629,6 +11728,7 @@ export namespace Prisma {
     status?: $Enums.TaskStatus
     taskerRated?: boolean
     taskPosterRated?: boolean
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskPoster: UserCreateNestedOneWithoutPostedTasksInput
@@ -11651,6 +11751,7 @@ export namespace Prisma {
     taskPosterRated?: boolean
     taskPosterId: string
     taskerAssignedId?: string | null
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     taskersApplied?: TaskApplicationsUncheckedCreateNestedManyWithoutTaskInput
@@ -11732,6 +11833,7 @@ export namespace Prisma {
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskPoster?: UserUpdateOneRequiredWithoutPostedTasksNestedInput
@@ -11754,6 +11856,7 @@ export namespace Prisma {
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskersApplied?: TaskApplicationsUncheckedUpdateManyWithoutTaskNestedInput
@@ -11826,6 +11929,7 @@ export namespace Prisma {
     taskerRated?: boolean
     taskPosterRated?: boolean
     taskerAssignedId?: string | null
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11843,6 +11947,7 @@ export namespace Prisma {
     taskerRated?: boolean
     taskPosterRated?: boolean
     taskPosterId: string
+    taskPayment?: $Enums.TaskPaymentStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11899,6 +12004,7 @@ export namespace Prisma {
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskerAssigned?: UserUpdateOneWithoutAssignedTasksNestedInput
@@ -11920,6 +12026,7 @@ export namespace Prisma {
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskersApplied?: TaskApplicationsUncheckedUpdateManyWithoutTaskNestedInput
@@ -11940,6 +12047,7 @@ export namespace Prisma {
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskerAssignedId?: NullableStringFieldUpdateOperationsInput | string | null
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11956,6 +12064,7 @@ export namespace Prisma {
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskPoster?: UserUpdateOneRequiredWithoutPostedTasksNestedInput
@@ -11977,6 +12086,7 @@ export namespace Prisma {
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     taskersApplied?: TaskApplicationsUncheckedUpdateManyWithoutTaskNestedInput
@@ -11997,6 +12107,7 @@ export namespace Prisma {
     taskerRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterRated?: BoolFieldUpdateOperationsInput | boolean
     taskPosterId?: StringFieldUpdateOperationsInput | string
+    taskPayment?: EnumTaskPaymentStatusFieldUpdateOperationsInput | $Enums.TaskPaymentStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

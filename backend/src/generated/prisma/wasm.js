@@ -150,6 +150,7 @@ exports.Prisma.TaskScalarFieldEnum = {
   taskPosterRated: 'taskPosterRated',
   taskPosterId: 'taskPosterId',
   taskerAssignedId: 'taskerAssignedId',
+  taskPayment: 'taskPayment',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -259,6 +260,13 @@ exports.TaskStatus = exports.$Enums.TaskStatus = {
   IN_PROGRESS: 'IN_PROGRESS',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED'
+};
+
+exports.TaskPaymentStatus = exports.$Enums.TaskPaymentStatus = {
+  UNCONFIRMED: 'UNCONFIRMED',
+  POSTER_CONFIRMED: 'POSTER_CONFIRMED',
+  CONFIRMED: 'CONFIRMED',
+  CONFLICT: 'CONFLICT'
 };
 
 exports.TaskApplicationStatus = exports.$Enums.TaskApplicationStatus = {
