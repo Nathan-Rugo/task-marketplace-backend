@@ -113,7 +113,7 @@ export async function getTasksByUserId(userId: string): Promise<{
     const applied0 = await prisma.taskApplications.findMany({
         where: {
             userId: userId,
-            task: taskStatusAppliedFilter,
+            task: {status: {in: [TaskStatus.PENDING, TaskStatus.IN_PROGRESS, TaskStatus.REVIEW, TaskStatus.COMPLETED]}},
             status: {in: [TaskApplicationStatus.ACCEPTED, TaskApplicationStatus.DENIED]},
             appliedAt: {
                 gte: cutOffdate,

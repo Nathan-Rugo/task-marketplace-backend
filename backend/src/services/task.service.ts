@@ -201,6 +201,15 @@ export const cancelTask = async(taskId: string, userId:string) => {
 
     if(user.taskPosterId !== userId) throw new Error('Unauthorised');
 
+    const currentTask = await prisma.task.findUnique({
+        where: {id: taskId}
+    });
+
+    if (!currentTask) throw new Error('TaskNotFound');
+    if (currentTask.status === TaskStatus.COMPLETED) throw new Error('AlreadyCompleted');
+    if (currentTask.status === TaskStatus.CANCELLED) throw new Error('AlreadyCancelled');
+    if (currentTask.status === TaskStatus.REVIEW) throw new Error('CannotCancelInReview');
+
     const task = await prisma.task.update({
         where: {id: taskId, taskPosterId: userId},
         data: {
@@ -327,19 +336,19 @@ export const updateTaskRatingStats = async (
         const current = task.taskPayment;
 
         if (isTasker) {
-        if (current === 'UNCONFIRMED') {
             paymentUpdate.taskPayment = 'CONFIRMED';
-        } else if (current === 'POSTER_CONFIRMED') {
-            paymentUpdate.taskPayment = 'CONFLICT';
-        }
         }
 
         if (isPoster) {
-        if (current === 'UNCONFIRMED') {
-            paymentUpdate.taskPayment = 'POSTER_CONFIRMED';
-        } else if (current === 'CONFIRMED') {
-            paymentUpdate.taskPayment = 'CONFLICT';
+            if (current === 'UNCONFIRMED') {
+                paymentUpdate.taskPayment = 'POSTER_CONFIRMED';
+            }
         }
+    }else{
+        if (isTasker) {
+            if (task.taskPayment === 'POSTER_CONFIRMED') {
+                paymentUpdate.taskPayment = 'CONFLICT'
+            }
         }
     }
 
