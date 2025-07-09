@@ -244,8 +244,6 @@ export const giveReview = async(taskId:string, reviewerId: string, rating: numbe
 
     if (existingReview) throw new Error('AlreadyReview');
 
-    await updateReviewStats(revieweeId, rating);
-
     await prisma.review.create({
         data: {
             taskId: taskId,
@@ -263,6 +261,8 @@ export const giveReview = async(taskId:string, reviewerId: string, rating: numbe
             reviewee: {select: userReturned}
         }
     });
+
+    await updateReviewStats(revieweeId, rating);
 
     const task = await updateTaskRatingStats(reviewerId, taskId, paymentConfirmed);
 

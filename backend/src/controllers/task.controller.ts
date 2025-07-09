@@ -125,6 +125,13 @@ export const confirmPaymentController = async (req: Request, res: Response) => {
             return
         }
 
+        await prisma.user.update({
+        where: {id: userId},
+            data: {
+                tasksPosted: {increment: 1}
+            }
+        })
+
         const task = await prisma.task.update({
             where: { id: taskId },
             data: {
